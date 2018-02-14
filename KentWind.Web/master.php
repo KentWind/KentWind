@@ -1,32 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+<html>
+<head>
+<title><?php echo $pagetitle; ?></title>
+</head>
+<body style="margin-top:20px;margin-left:20px;margin-right:20px;">
+<table width="100%" border="0" cellpadding="10" cellspacing="0"border="0">
+<tr bgcolor="#33FFFF">
+<td colspan="5"><h2>Template Specific Header</h2></td>
+</tr>
+<tr bgcolor="#EEEEEE">
+<td nowrap><a href=#">Navigation Link 1</a></td>
+<td nowrap><a href="#">Navigation Link 2</a></td>
+<td nowrap><a href="#">Navigation Link 3</a></td>
+<td nowrap><a href="#">Navigation Link 4</a></td>
+<td width="100%">&nbsp;</td>
+</tr>
+</table>
 
-		<!-- bootstrap-4.0.0-dist -->
-		<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
-		<link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
 
-		<title><?php echo $pagetitle; ?></title>
-	</head>
+<table width="100%" cellpadding="10" cellspacing="0" border="0">
+<tr>
+<td width="30%" valign="top" bgcolor="#EEEEEE"><strong>Template Specific
+Navigation</strong>
 
-	<body>
-		<div id="divHeader">
-			This is the header.
-		</div>
-		<div id="divLinks">
-			These are the links.
-		</div>
-		<div id="divBody">
-			This is gonna be our main text for each page:
-			<?php echo $pagecontents; ?>
-		</div>
-		<div id="divFooter">
-			This is the footer.
-		</div>
 
-		<script src="bootstrap/js/jquery-1.11.3.min.js"></script>
-    <script src="bootstrap/js/bootstrap.min.js"></script>
-	</body>
+<a href="#">Link 1</a>
+
+<a href="#">Link 2</a>
+
+<a href="#">Link 3</a>
+
+</td>
+<td width="70%" valign="top"><?php
+echo $pagemaincontent;
+?></td>
+</tr>
+</table>
+
+
+<table width="100%" cellspacing="0" cellpadding="10" border="0">
+<tr>
+<td colspan="2" bgcolor="#33FFFF">Template Specific Footer</td>
+</tr>
+</table>
+</body>
 </html>
