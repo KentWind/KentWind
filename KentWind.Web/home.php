@@ -1,21 +1,12 @@
 <?php
 	// Buffer larger content areas like the main page content
 	ob_start();
-	$city = "Kent";
-	$state = "Ohio";
 ?>
 
 <!-- Page Specific Content -->
-<div class="row">
+
+	<h4>KentWind&trade; Home</h4>
 	
-	<div class="col">
-		<h4>KentWind&trade; Wind Map of <?php echo $city; echo ', '; echo $state; ?></h4>
-		<div class="container" id="windMapContainer">
-			The Windmap will go in here.
-		</div>
-	</div>
-	
-</div>
 <!-- End Page Specific Content -->
 
 <?php

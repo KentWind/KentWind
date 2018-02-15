@@ -6,16 +6,9 @@
 ?>
 
 <!-- Page Specific Content -->
-<div class="row">
-	
-	<div class="col">
-		<h4>KentWind&trade; Wind Map of <?php echo $city; echo ', '; echo $state; ?></h4>
-		<div class="container" id="windMapContainer">
-			The Windmap will go in here.
-		</div>
-	</div>
-	
-</div>
+
+<h4>KentWind&trade; About Us</h4>
+
 <!-- End Page Specific Content -->
 
 <?php

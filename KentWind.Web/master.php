@@ -1,46 +1,46 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title><?php echo $pagetitle; ?></title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- bootstrap-4.0.0-dist -->
+	<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="css/style.css">
+	
+	<title>KentWind <?php echo $pagetitle; ?></title>
 </head>
-<body style="margin-top:20px;margin-left:20px;margin-right:20px;">
-<table width="100%" border="0" cellpadding="10" cellspacing="0"border="0">
-<tr bgcolor="#33FFFF">
-<td colspan="5"><h2>Template Specific Header</h2></td>
-</tr>
-<tr bgcolor="#EEEEEE">
-<td nowrap><a href=#">Navigation Link 1</a></td>
-<td nowrap><a href="#">Navigation Link 2</a></td>
-<td nowrap><a href="#">Navigation Link 3</a></td>
-<td nowrap><a href="#">Navigation Link 4</a></td>
-<td width="100%">&nbsp;</td>
-</tr>
-</table>
-
-
-<table width="100%" cellpadding="10" cellspacing="0" border="0">
-<tr>
-<td width="30%" valign="top" bgcolor="#EEEEEE"><strong>Template Specific
-Navigation</strong>
-
-
-<a href="#">Link 1</a>
-
-<a href="#">Link 2</a>
-
-<a href="#">Link 3</a>
-
-</td>
-<td width="70%" valign="top"><?php
-echo $pagemaincontent;
-?></td>
-</tr>
-</table>
-
-
-<table width="100%" cellspacing="0" cellpadding="10" border="0">
-<tr>
-<td colspan="2" bgcolor="#33FFFF">Template Specific Footer</td>
-</tr>
-</table>
+<body>
+	
+		<!-- Header Section -->
+		<div id="header">
+			<a href="home.php"><h1>KentWind</h1></a>
+		</div>
+		<!-- End Header Section -->
+		
+		<!-- Navbar section -->
+		<nav class="navbar navbar-expand-lg navbar-dark bg-light">
+			<nav class="nav">
+				<a class="nav-link font-weight-bold" href="home.php">Home</a>
+				<a class="nav-link font-weight-bold" href="windmap.php">WindMap</a>
+				<a class="nav-link font-weight-bold" href="about.php">About Us</a>
+			</nav>
+		</nav>
+		<!-- End Navbar section -->
+		
+		<!-- Main Content Section -->
+		<div id="mainContent">
+			<?php
+				echo $pagecontents;
+			?>
+		</div>
+		<!-- End Main Content Section -->
+		
+		<!-- Footer Section -->
+		<div id="footer" class="navbar navbar-light bg-light fixed-bottom text-center">
+				<p>&copy; 2018 KentWind</p>
+		</div>
+		<!-- End Footer Section -->
 </body>
 </html>
