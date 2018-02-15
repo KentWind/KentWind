@@ -6,15 +6,23 @@
 ?>
 
 <!-- Page Specific Content -->
-<div class="row">
+<ol class="breadcrumb">
+  <li><a href="home.php">Home</a></li>
+  <li><a href="windmap.php">WindMap</a></li>
+</ol>
 
+<div class="container">
+	<h4>Wind Map of <?php echo $city; echo ', '; echo $state; ?></h4>
+	
 	<div class="col">
-    <canvas id="windMap"></canvas>
+		<canvas id="windMap">
+		</canvas>
 	</div>
-
 </div>
 
+<!-- File to handle js windmap -->
 <script src="/js/windCanvas.js"></script>
+
 <!-- End Page Specific Content -->
 
 <?php
@@ -25,7 +33,7 @@
 	// http://php.net/manual/en/function.ob-start.php
 	$pagecontents = ob_get_contents();
 	ob_end_clean();
-	$pagetitle = "Page Specific Title Text";
+	$pagetitle = "- WindMap";
 	//Apply the template
 	include("master.php");
 ?>

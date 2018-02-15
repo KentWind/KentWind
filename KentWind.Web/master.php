@@ -7,13 +7,14 @@
 	<!-- local bootstrap-4.0.0-dist
 	<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css" />
-	<link rel="stylesheet" href="css/style.css" />
 	<script src="bootstrap/js/bootstrap.min.js"></script>
 	<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 	-->
 
-	<!-- bootstrap-4.0.0 CDN  +  jquery -->
+	<!-- bootstrap-3.3.7 CDN  +  jquery -->
 	<!-- Latest compiled and minified CSS -->
+	
+	<link rel="stylesheet" href="css/style.css" />
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
 	<!-- Optional theme -->
@@ -29,12 +30,12 @@
 	<nav class="navbar navbar-default">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a class="navbar-brand" href="home.php">KentWind</a>
+				<a class="navbar-brand" href="home.php">KentWind&trade;</a>
 			</div>
 			<ul class="nav navbar-nav">
-				<li class="active"><a href="home.php">Home</a></li>
-				<li><a href="windmap.php">WindMap</a></li>
-				<li><a href="about.php">About Us</a></li>
+				<li class="active"><a href="home.php"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+				<li><a href="windmap.php"><span class="glyphicon glyphicon-send"></span> WindMap</a></li>
+				<li><a href="about.php"><span class="glyphicon glyphicon-info-sign"></span> About Us</a></li>
 			</ul>
 		</div>
 	</nav>
@@ -48,11 +49,8 @@
 		<!-- End Main Content Section -->
 
 		<!-- Footer Section -->
-		<footer class="footer">
-      <div class="container">
-				<span class="text-muted">&copy; 2018 KentWind</span>
-			</div>
-		</footer>
+		<div id="footer" class="navbar navbar-light navbar-fixed-bottom bg-light">
+				&copy; 2018 KentWind
 		</div>
 		<!-- End Footer Section -->
 </html>
