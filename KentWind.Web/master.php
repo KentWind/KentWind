@@ -53,5 +53,7 @@
 				&copy; 2018 KentWind
 		</div>
 		<!-- End Footer Section -->
+
+		<script src="js/windCanvas.js"></script>
 	</body>
 </html>

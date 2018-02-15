@@ -13,7 +13,7 @@
 
 <div class="container">
 	<h4>Wind Map of <?php echo $city; echo ', '; echo $state; ?></h4>
-	
+
 	<div class="col">
 		<canvas id="windMap">
 		</canvas>
@@ -28,7 +28,7 @@
 </script>
 
 <!-- File to handle js windmap -->
-<script src="/js/windCanvas.js"></script>
+<script src="js/windCanvas.js"></script>
 
 <!-- End Page Specific Content -->
 
