@@ -13,7 +13,7 @@
 
 	<!-- bootstrap-3.3.7 CDN  +  jquery -->
 	<!-- Latest compiled and minified CSS -->
-	
+
 	<link rel="stylesheet" href="css/style.css" />
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
@@ -49,8 +49,9 @@
 		<!-- End Main Content Section -->
 
 		<!-- Footer Section -->
-		<div id="footer" class="navbar navbar-light navbar-fixed-bottom bg-light">
+		<div id="footer" class="navbar navbar-light bg-light">
 				&copy; 2018 KentWind
 		</div>
 		<!-- End Footer Section -->
+	</body>
 </html>

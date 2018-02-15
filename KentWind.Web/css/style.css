@@ -6,6 +6,10 @@
 	Description: The main stylesheet for the entire KentWind web site.
 */
 
+html, body {
+	height:100%
+}
+
 body
 {
 	padding: 0;
