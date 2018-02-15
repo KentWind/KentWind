@@ -33,9 +33,9 @@
 				<a class="navbar-brand" href="home.php">KentWind&trade;</a>
 			</div>
 			<ul class="nav navbar-nav">
-				<li class="active"><a href="home.php"><span class="glyphicon glyphicon-home"></span> Home</a></li>
-				<li><a href="windmap.php"><span class="glyphicon glyphicon-send"></span> WindMap</a></li>
-				<li><a href="about.php"><span class="glyphicon glyphicon-info-sign"></span> About Us</a></li>
+				<li id="linkHome"><a href="home.php"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+				<li id="linkWindMap"><a href="windmap.php"><span class="glyphicon glyphicon-send"></span> WindMap</a></li>
+				<li id="linkAboutUs"><a href="about.php"><span class="glyphicon glyphicon-info-sign"></span> About Us</a></li>
 			</ul>
 		</div>
 	</nav>

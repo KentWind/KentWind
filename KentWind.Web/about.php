@@ -49,6 +49,11 @@
 	</div>
 </div>
 
+<script type="text/javascript">
+(function() {
+	document.getElementById("linkAboutUs").setAttribute("class", "active");
+})();
+</script>
 <!-- End Page Specific Content -->
 
 <?php

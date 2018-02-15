@@ -20,6 +20,13 @@
 	</div>
 </div>
 
+
+<script type="text/javascript">
+(function() {
+	document.getElementById("linkWindMap").setAttribute("class", "active");
+})();
+</script>
+
 <!-- File to handle js windmap -->
 <script src="/js/windCanvas.js"></script>
 
