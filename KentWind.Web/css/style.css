@@ -27,6 +27,7 @@ body
 {
 	border-top: 1px solid black;
 	height: 2.5em;
+	text-align: center;
 }
 
 #windMapContainer

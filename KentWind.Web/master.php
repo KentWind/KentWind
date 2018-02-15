@@ -38,8 +38,8 @@
 		<!-- End Main Content Section -->
 		
 		<!-- Footer Section -->
-		<div id="footer" class="navbar navbar-light bg-light fixed-bottom text-center">
-				<p>&copy; 2018 KentWind</p>
+		<div id="footer" class="navbar navbar-light bg-light fixed-bottom">
+			&copy; 2018 KentWind
 		</div>
 		<!-- End Footer Section -->
 </body>
