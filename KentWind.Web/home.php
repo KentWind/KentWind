@@ -17,6 +17,12 @@
 		<p><a class="btn btn-primary btn-lg" href="windmap.php">How windy is it?</a></p>
 	</div>
 </div>
+
+<script type="text/javascript">
+(function() {
+	document.getElementById("linkHome").setAttribute("class", "active");
+})();
+</script>
 <!-- End Page Specific Content -->
 
 <?php
