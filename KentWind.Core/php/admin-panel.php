@@ -7,7 +7,15 @@
     define('DBUSER', 'admin');
     define('DBPASS', 'password');
     
-    $connection = 
+    $pdo_database_conn = null;
+    try {
+        
+        $conn_string = DRIVER . ":" . "dbname=" . DBNAME;
+        $pdo_database_conn = new PDO($conn_string, DBUSER, DBPASS);
+        
+    } catch(PDOException $e) {
+        die( $e->getMessage() );
+    }
 ?>
 
 <html lang="en">
@@ -36,87 +44,99 @@
 
     <?php include 'admin-navbar.php'; ?>
 
-    <div class="row">
-        <div class="container-fluid">
-
-        </div>
-    </div>
+    <?php
+        
+        $result = null;
+        $sql = null;
+        $statement = null;
+        
+        if ( !empty($_GET['query']) ) {
+            $sql = $_GET['query'];
+            
+            $statement = $pdo_database_conn->prepare($sql);
+            $statement->execute();
+            
+            $result = $statement->fetchAll();
+        }
+        
+        /*$sql = "SELECT * FROM wind_sensor";
+        $result = $pdo_database_conn->query($sql);
+        echo "Query complete.";*/
+        
+    ?>
     
     <div class="row">
         <div class="container-fluid">
             
             <form action="admin-panel.php" method="GET"> 
-                <div class="">
+                <input type="text" name="query" style="width: 40%;">
+                <input type="submit" style="width: 15%;">
+                <!--<div class="">
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="SQL Query ..." id="textQuery"/>
-                        <div class="input-group-btn">
-                            <button class="btn btn-primary" type="submit">
+                        <!--<div class="input-group-btn">
+                            <input class="btn btn-primary" type="submit">
                                 <span class="glyphicon glyphicon-search"></span>
                             </button>
                         </div>
                     </div>
-                </div>
+                </div>-->
             </form>
             
         </div> <!-- end fluid container -->
     </div> <!-- end row -->
     
-    <br>
+    <div class="row">
+        <div class="container-fluid">
+            <br>
+        </div>
+    </div>
     
     <div class="row">
     
         <div class="container-fluid">
-            <details>
-                <b>QUERY:</b>
-                <br>
-                <pre>
-                    
-                </pre>
-            </details>
+            <b>QUERY</b>
+                <pre><?=$sql?><?php
+                
+                    /*
+                    print "ID - LOCATION - X, Y\n";
+                
+                    foreach ($result as $row) {
+                        print $row['id'];
+                        print '-';
+                        print $row['location'];
+                        print '-';
+                        print $row['x'];
+                        print ', ';
+                        print $row['y'];
+                    }*/
+                ?></pre>
         </div>
-    
-        <!--<div class="col-md-3">
-            <div class="container">
-                <b>QUERY :</b>
-                <br>
-                <textarea>
-                </textarea>
-            </div>
-        </div>
-        
-        <div class="col-md-9">
-            <div class="container" >
-                <b>RESULT :</b>
-                <br>
-                <pre>
-                    abcedefag asda asdasdasd asd abcedefag asda asdasdasd asd abcedefag asda asdasdasd asd abcedefag asda asdasdasd asd abcedefag asda asdasdasd asd abcedefag asda asdasdasd asd
-                </pre>
-            </div>
-        </div>-->
-    
     </div> <!-- end row -->
     
     <div class="row">
         <div class="container-fluid">
-            <b>RESULT:</b>
-            <br>
-            <pre>
+            <b>RESULT</b>
+            <pre><?php
                 
+                    print_r(array_keys($result[0]));
+                    /*print "ID - LOCATION - X, Y\n";
+                
+                    foreach ($result as $row) {
+                        print $row['id'];
+                        print '-';
+                        print $row['location'];
+                        print '-';
+                        print $row['x'];
+                        print ', ';
+                        print $row['y'];
+                    }*/
+                ?>
             </pre>
         </div>
     </div>
     
-</div>
-    <!-- end row -->
-<!--
-                      <table>
-                    <tr>
-                        <td>Query: </td>
-                        <td><form action="admin-panel.php" method="get"><input type="text" name="query"><input type="submit"></form></td>
-                    </tr>
-                </table>-->
-      
-
+</div> <!-- end container -->
   
 </body></html>
 
