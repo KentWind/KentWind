@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 15, 2018 at 08:39 PM
+-- Generation Time: Feb 17, 2018 at 12:44 AM
 -- Server version: 10.1.30-MariaDB
 -- PHP Version: 7.2.1
 
@@ -21,6 +21,19 @@ SET time_zone = "+00:00";
 --
 -- Database: `kent_wind`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `historical_data`
+--
+
+CREATE TABLE `historical_data` (
+  `id` int(11) NOT NULL,
+  `speed` int(11) NOT NULL,
+  `direction` int(11) NOT NULL,
+  `time` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -67,6 +80,12 @@ INSERT INTO `wind_sensor` (`id`, `location`, `x`, `y`) VALUES
 --
 
 --
+-- Indexes for table `historical_data`
+--
+ALTER TABLE `historical_data`
+  ADD KEY `id` (`id`);
+
+--
 -- Indexes for table `live_data`
 --
 ALTER TABLE `live_data`
@@ -81,6 +100,12 @@ ALTER TABLE `wind_sensor`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `historical_data`
+--
+ALTER TABLE `historical_data`
+  ADD CONSTRAINT `historical_consistency` FOREIGN KEY (`id`) REFERENCES `wind_sensor` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `live_data`
