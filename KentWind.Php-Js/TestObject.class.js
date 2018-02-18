@@ -1,15 +1,11 @@
 //Constructor of a TestObject in javascript.
-
 function TestObject(json_object) {
-    this.id = json_object["id"];
+    this.id = json_object["device_id"];
     this.speed = json_object["speed"];
     this.direction = json_object["direction"];
-    //TO DO: Implement a member function that will print the object into the HTML.
-    this.get_id = function() {
-        return this.id;
-    }
 }
 
+//Uses an AJAX XMLHttpRequest Object to edit the HTML inside the index.php.
 function output(TestObject) {
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {

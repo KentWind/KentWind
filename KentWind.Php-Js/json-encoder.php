@@ -1,14 +1,9 @@
 <?php
-//Test data simulating a query, which returned an associative array.
-$result = array("id" => 2, "speed" => 38, "direction" => 8);
-
-//Convert the associative array to json.
-function to_json($result) {
-    return json_encode($result);
-}
+//Test data simulating a query, which was returned as an associative array.
+$result = array("device_id" => 2, "speed" => 38, "direction" => 8);
 
 //Adds the <script type="text/javascript"> var php_json = <?php to_json($result); </script> to the <head> tag of index.php.
 function insert_json_script($result) {
-    echo "<script>\n\t\tvar php_json = " . to_json($result) . ";\n\t</script>\n";
+    echo "<script>var php_json = " . json_encode($result) . ";</script>\n";
 }
 ?>
