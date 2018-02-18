@@ -1,5 +1,5 @@
 <?php
-//Test data simulating a query, which is an associative array retrived from a database.
+//Test data simulating a query, which returned an associative array.
 $result = array("id" => 2, "speed" => 38, "direction" => 8);
 
 //Convert the associative array to json.
