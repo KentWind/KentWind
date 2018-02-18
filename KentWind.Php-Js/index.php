@@ -16,7 +16,6 @@ include "json-encoder.php";
     <script type="text/javascript" src="json-test.js"></script>
 </head>
 <body>
-    <h2>TEST</h2>
     <div id="js-object">
     <!-- javascript object will be printed here when implemented -->
     </div>

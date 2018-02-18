@@ -1,2 +1,2 @@
 test = new TestObject(php_json);
-console.log(test);
+output(test);

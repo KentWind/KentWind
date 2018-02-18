@@ -9,6 +9,6 @@ function to_json($result) {
 
 //Adds the <script type="text/javascript"> var php_json = <?php to_json($result); </script> to the <head> tag of index.php.
 function insert_json_script($result) {
-    echo "<script type='text/javascript'> var php_json = " . to_json($result) . "; </script>";
+    echo "<script>\n\t\tvar php_json = " . to_json($result) . ";\n\t</script>\n";
 }
 ?>
