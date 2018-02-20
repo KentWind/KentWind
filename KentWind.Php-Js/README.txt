@@ -1,0 +1,1 @@
+This folder is dedicated to the testing of how PHP objects and variables will be passed into JavaScript and constructed into JavaScript variables to be used for the Wind.js API.
