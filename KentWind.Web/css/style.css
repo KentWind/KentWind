@@ -1,10 +1,13 @@
 /*
-
 	KentWind
 	style.css
 	Authors: Arnold Bykov, Michael Spangler
 	Description: The main stylesheet for the entire KentWind web site.
 */
+
+html, body {
+	height:100%
+}
 
 body
 {
@@ -27,15 +30,21 @@ body
 {
 	border-top: 1px solid black;
 	height: 2.5em;
+	text-align: center;
 }
 
-#windMapContainer
+#windMap
 {
-	width: 100%;
+	width: 90%;
 	height: 600px;
+	padding-right: 0;
+	padding-right: 0;
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
 	line-height: 600px; /* Ensure line-height and height are the same if you want text to be vertically centered. */
-	border: 1px solid black;
-	background-color: gray;
+	border: 1px solid grey;
+	background-color: lightgrey;
 	color: white;
 	font-weight: bold;
 	font-size: 16pt;
