@@ -119,7 +119,7 @@
             <b>RESULT</b>
             <pre><?php
                 
-                    print_r(array_keys($result[0]));
+                    print_r($result[0]);
                     /*print "ID - LOCATION - X, Y\n";
                 
                     foreach ($result as $row) {
