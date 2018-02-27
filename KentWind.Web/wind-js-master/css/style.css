@@ -24,7 +24,7 @@ html,body {
   border: 1px solid #000;
   pointer-events:none;
 }
-#mapCanvas #esriControlsBR, #mapCanvas #mapCanvas_zoom_slider { 
+#mapCanvas #esriControlsBR, #mapCanvas #mapCanvas_zoom_slider {
   display:none;
 }
 
