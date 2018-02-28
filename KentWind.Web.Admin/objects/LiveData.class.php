@@ -1,5 +1,13 @@
 <?php
 
+/*
+*
+* kent_wind
+* administrator
+* kentWind123
+*
+*/
+
 class LiveData {
     
     private $id;
@@ -29,6 +37,14 @@ class LiveData {
     public function getDateTime() {
         return $this->datetime;
     }
+	
+	public function getJSON() {
+		$assoc_array = array(	"id" 		=> $id,
+								"speed" 	=> $speed,
+								"direction" => $direction,
+								"datetime" 	=> $datetime		);
+		return json_encode($assoc_array);
+	}
     
 }
 
