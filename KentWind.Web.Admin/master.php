@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Admin Panel</title>
+	<title>KentWind Admin - <?php echo $pagetitle; ?></title>
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1">	
 	<meta charset="utf-8">
@@ -74,7 +74,6 @@
 			&copy; 2018 KentWind
 	</div>
 	<!-- End Footer Section -->
-
-	<script src="js/windCanvas.js"></script>
+	
 </body>
 </html>

@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-
 <?php
     define('DRIVER', 'mysql');
     define('DBHOST', 'localhost');
@@ -136,4 +134,3 @@
 	//Apply the template
 	include("master.php");
 ?>
-
