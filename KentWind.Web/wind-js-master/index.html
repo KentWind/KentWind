@@ -64,8 +64,8 @@
         canvasSupport = supports_canvas();
 
         map = new Map("mapCanvas", {
-          center: [-99.076, 39.132],
-          zoom: 3,
+          center: [-81.3425, 41.1480],
+          zoom: 16,
           basemap: "dark-gray"
         });
 
@@ -76,7 +76,7 @@
           // Add raster layer
           if ( canvasSupport ) {
             rasterLayer = new RasterLayer(null, {
-              opacity: 0.55
+              opacity: 1
             });
             map.addLayer(rasterLayer);
 

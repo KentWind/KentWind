@@ -43,12 +43,12 @@
       	"ny": 181,
       	"basicAngle": 0,
       	"subDivisions": 0,
-      	"lo1": 278.64696,
-      	"la1": 41.152815,
+      	"lo1": 0,
+      	"la1": 90,
       	"lo2": 359,
       	"la2": -90,
-      	"dx": 0.00005,
-      	"dy": 0.00005
+      	"dx": 1,
+      	"dy": 1
     }
     ,
     "data":[3.88,
@@ -65220,8 +65220,7 @@
 {
     "header": {
         "discipline": 0,
-        "disciplineName":
-        "Meteorological products",
+        "disciplineName": "Meteorological products",
         "gribEdition": 2,
         "gribLength": 133963,
         "center": 7,
@@ -65263,12 +65262,12 @@
         "ny": 181,
         "basicAngle": 0,
         "subDivisions": 0,
-        "lo1": 278.64696,
-      	"la1": 41.152815,
-      	"lo2": 359,
-      	"la2": -90,
-      	"dx": 0.00005,
-      	"dy": 0.00005
+        "lo1": 0,
+        "la1": 90,
+        "lo2": 359,
+        "la2": -90,
+        "dx": 1,
+        "dy": 1
     }
     ,
     "data":[8.81,

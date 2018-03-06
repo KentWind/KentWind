@@ -11,7 +11,7 @@
 */
 
 var Windy = function( params ){
-  var VELOCITY_SCALE = 0.000005;             // scale for wind velocity (completely arbitrary--this value looks nice)
+  var VELOCITY_SCALE = 0.011;             // scale for wind velocity (completely arbitrary--this value looks nice)
   var INTENSITY_SCALE_STEP = 10;            // step size of particle intensity color scale
   var MAX_WIND_INTENSITY = 40;              // wind velocity at which particle intensity is maximum (m/s)
   var MAX_PARTICLE_AGE = 100;                // max number of frames a particle is drawn before regeneration
@@ -68,10 +68,6 @@ var Windy = function( params ){
   var buildGrid = function(data, callback) {
       var builder = createBuilder(data);
 
-      // North West corner:   (41.152815, -81.353040)
-      // Center:              (41.147395, -81.346921)
-      // South East corner:   (41.141018, -81.335271)
-
       var header = builder.header;
       var λ0 = header.lo1, φ0 = header.la1;  // the grid's origin (e.g., 0.0E, 90.0N)
       var Δλ = header.dx, Δφ = header.dy;    // distance between grid points (e.g., 2.5 deg lon, 2.5 deg lat)
@@ -82,7 +78,7 @@ var Windy = function( params ){
       // Scan mode 0 assumed. Longitude increases from λ0, and latitude decreases from φ0.
       // http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table3-4.shtml
       var grid = [], p = 0;
-      var isContinuous = Math.floor(ni * Δλ) >= 360;  // # of horiz grid points * distance between horiz grid points >= 360
+      var isContinuous = Math.floor(ni * Δλ) >= 360;
       for (var j = 0; j < nj; j++) {
           var row = [];
           for (var i = 0; i < ni; i++, p++) {
