@@ -11,9 +11,9 @@
 */
 
 var Windy = function( params ){
-  var VELOCITY_SCALE = 0.011;             // scale for wind velocity (completely arbitrary--this value looks nice)
+  var VELOCITY_SCALE = 0.0000015;             // scale for wind velocity (completely arbitrary--this value looks nice)
   var INTENSITY_SCALE_STEP = 10;            // step size of particle intensity color scale
-  var MAX_WIND_INTENSITY = 40;              // wind velocity at which particle intensity is maximum (m/s)
+  var MAX_WIND_INTENSITY = 20;              // wind velocity at which particle intensity is maximum (m/s)
   var MAX_PARTICLE_AGE = 100;                // max number of frames a particle is drawn before regeneration
   var PARTICLE_LINE_WIDTH = 1;              // line width of a drawn particle
   var PARTICLE_MULTIPLIER = 1/100;              // particle count scalar (completely arbitrary--this values looks nice)
@@ -68,6 +68,10 @@ var Windy = function( params ){
   var buildGrid = function(data, callback) {
       var builder = createBuilder(data);
 
+      // North West corner:   (41.152815, -81.353040)
+      // Center:              (41.147395, -81.346921)
+      // South East corner:   (41.141018, -81.335271)
+
       var header = builder.header;
       var λ0 = header.lo1, φ0 = header.la1;  // the grid's origin (e.g., 0.0E, 90.0N)
       var Δλ = header.dx, Δφ = header.dy;    // distance between grid points (e.g., 2.5 deg lon, 2.5 deg lat)
@@ -78,7 +82,7 @@ var Windy = function( params ){
       // Scan mode 0 assumed. Longitude increases from λ0, and latitude decreases from φ0.
       // http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table3-4.shtml
       var grid = [], p = 0;
-      var isContinuous = Math.floor(ni * Δλ) >= 360;
+      var isContinuous = Math.floor(ni * Δλ) >= 360;  // # of horiz grid points * distance between horiz grid points >= 360
       for (var j = 0; j < nj; j++) {
           var row = [];
           for (var i = 0; i < ni; i++, p++) {
@@ -325,6 +329,7 @@ var Windy = function( params ){
     function windIntensityColorScale(step, maxWind) {
 
         var result = [
+          "#d73027","#f46d43","#fdae61","#fee090","#ffffbf","#e0f3f8","#abd9e9","#74add1","#4575b4"
           /* blue to red
           "rgba(" + hexToR('#178be7') + ", " + hexToG('#178be7') + ", " + hexToB('#178be7') + ", " + 0.5 + ")",
           "rgba(" + hexToR('#8888bd') + ", " + hexToG('#8888bd') + ", " + hexToB('#8888bd') + ", " + 0.5 + ")",
@@ -336,7 +341,7 @@ var Windy = function( params ){
           "rgba(" + hexToR('#fb4f17') + ", " + hexToG('#fb4f17') + ", " + hexToB('#fb4f17') + ", " + 0.5 + ")",
           "rgba(" + hexToR('#fe3705') + ", " + hexToG('#fe3705') + ", " + hexToB('#fe3705') + ", " + 0.5 + ")",
           "rgba(" + hexToR('#ff0000') + ", " + hexToG('#ff0000') + ", " + hexToB('#ff0000') + ", " + 0.5 + ")"
-          */
+
           "rgba(" + hexToR('#00ffff') + ", " + hexToG('#00ffff') + ", " + hexToB('#00ffff') + ", " + 0.5 + ")",
           "rgba(" + hexToR('#64f0ff') + ", " + hexToG('#64f0ff') + ", " + hexToB('#64f0ff') + ", " + 0.5 + ")",
           "rgba(" + hexToR('#87e1ff') + ", " + hexToG('#87e1ff') + ", " + hexToB('#87e1ff') + ", " + 0.5 + ")",
@@ -347,6 +352,7 @@ var Windy = function( params ){
           "rgba(" + hexToR('#e185ff') + ", " + hexToG('#e185ff') + ", " + hexToB('#e185ff') + ", " + 0.5 + ")",
           "rgba(" + hexToR('#ec6dff') + ", " + hexToG('#ec6dff') + ", " + hexToB('#ec6dff') + ", " + 0.5 + ")",
           "rgba(" + hexToR('#ff1edb') + ", " + hexToG('#ff1edb') + ", " + hexToB('#ff1edb') + ", " + 0.5 + ")"
+          */
         ]
         /*
         var result = [];
@@ -363,12 +369,12 @@ var Windy = function( params ){
     var colorStyles = windIntensityColorScale(INTENSITY_SCALE_STEP, MAX_WIND_INTENSITY);
     var buckets = colorStyles.map(function() { return []; });
 
-    var particleCount = Math.round(bounds.width * bounds.height * PARTICLE_MULTIPLIER * .1);
+    var particleCount = Math.round(bounds.width * bounds.height * PARTICLE_MULTIPLIER * .5);
     if (isMobile()) {
       particleCount *= PARTICLE_REDUCTION;
     }
 
-    var fadeFillStyle = "rgba(0, 0, 0, 0.97)";
+    var fadeFillStyle = "rgba(0, 0, 0, 0.85)";
 
     var particles = [];
     for (var i = 0; i < particleCount; i++) {

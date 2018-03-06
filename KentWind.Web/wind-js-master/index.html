@@ -14,11 +14,9 @@
         margin: 0;
         padding: 0px 0 0 0;
       }
-
       #mapCanvas {
         padding:0;
       }
-
       #credit {
         position: absolute;
         bottom: 10px;
@@ -26,11 +24,9 @@
         color: #fff;
         font-size: 14px;
       }
-
       #credit a {
         color: #08c;
       }
-
     </style>
 
     <script>
@@ -45,7 +41,6 @@
     <script>
       var map, rasterLayer;
       var canvasSupport;
-
       require([
         "esri/map", "esri/layers/ArcGISTiledMapServiceLayer",
         "esri/domUtils", "esri/request",
@@ -62,29 +57,23 @@
         parser.parse();
         // does the browser support canvas?
         canvasSupport = supports_canvas();
-
         map = new Map("mapCanvas", {
           center: [-81.3425, 41.1480],
           zoom: 16,
           basemap: "dark-gray"
         });
-
         map.on("load", mapLoaded);
-
         function mapLoaded() {
-
           // Add raster layer
           if ( canvasSupport ) {
             rasterLayer = new RasterLayer(null, {
               opacity: 1
             });
             map.addLayer(rasterLayer);
-
             map.on("extent-change", redraw);
             map.on("resize", function(){});
             map.on("zoom-start", redraw);
             map.on("pan-start", redraw);
-
             var layersRequest = esriRequest({
               url: './gfs.json',
               content: {},
@@ -97,24 +86,18 @@
             }, function(error) {
                 console.log("Error: ", error.message);
             });
-
           } else {
             dom.byId("mapCanvas").innerHTML = "This browser doesn't support canvas. Visit <a target='_blank' href='http://www.caniuse.com/#search=canvas'>caniuse.com</a> for supported browsers";
           }
         }
-
         // does the browser support canvas?
         function supports_canvas() {
           return !!document.createElement("canvas").getContext;
         }
-
         function redraw(){
-
           rasterLayer._element.width = map.width;
           rasterLayer._element.height = map.height;
-
           windy.stop();
-
           var extent = map.geographicExtent;
           setTimeout(function(){
             windy.start(
@@ -123,7 +106,7 @@
               map.height,
               [[extent.xmin, extent.ymin],[extent.xmax, extent.ymax]]
             );
-          },500);
+          },0);
         }
       });
     </script>
