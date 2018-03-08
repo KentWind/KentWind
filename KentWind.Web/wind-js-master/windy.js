@@ -49,7 +49,9 @@ var Windy = function( params ){
           interpolate: bilinearInterpolateVector
       }
   };
-
+  /*
+  DATA - json data
+  */
   var createBuilder = function(data) {
       var uComp = null, vComp = null, scalar = null;
 
@@ -65,16 +67,27 @@ var Windy = function( params ){
       return createWindBuilder(uComp, vComp);
   };
 
+  /*
+  DATA - json data
+  CALLBACK -
+    function(grid){
+      interpolateField( grid, buildBounds( bounds, width, height), mapBounds, function( bounds, field ){
+        windy.field = field;
+        animate( bounds, field );
+      });
+    }
+  */
   var buildGrid = function(data, callback) {
       var builder = createBuilder(data);
-
       // North West corner:   (41.152815, -81.353040)
       // Center:              (41.147395, -81.346921)
       // South East corner:   (41.141018, -81.335271)
 
       var header = builder.header;
-      var λ0 = header.lo1, φ0 = header.la1;  // the grid's origin (e.g., 0.0E, 90.0N)
+      //var λ0 = header.lo1, φ0 = header.la1;  // the grid's origin (e.g., 0.0E, 90.0N)
+      λ0 = -81.35123, φ0 = 41.15368;
       var Δλ = header.dx, Δφ = header.dy;    // distance between grid points (e.g., 2.5 deg lon, 2.5 deg lat)
+      //var Δλ = 0.00005, Δφ = 0.00005;
       var ni = header.nx, nj = header.ny;    // number of grid points W-E and N-S (e.g., 144 x 73)
       var date = new Date(header.refTime);
       date.setHours(date.getHours() + header.forecastTime);
