@@ -11,12 +11,12 @@
 */
 
 var Windy = function( params ){
-  var VELOCITY_SCALE = 0.0000015;             // scale for wind velocity (completely arbitrary--this value looks nice)
+  var VELOCITY_SCALE = 0.00000175;             // scale for wind velocity (completely arbitrary--this value looks nice)
   var INTENSITY_SCALE_STEP = 10;            // step size of particle intensity color scale
   var MAX_WIND_INTENSITY = 20;              // wind velocity at which particle intensity is maximum (m/s)
-  var MAX_PARTICLE_AGE = 100;                // max number of frames a particle is drawn before regeneration
-  var PARTICLE_LINE_WIDTH = 1;              // line width of a drawn particle
-  var PARTICLE_MULTIPLIER = 1/100;              // particle count scalar (completely arbitrary--this values looks nice)
+  var MAX_PARTICLE_AGE = 75;                // max number of frames a particle is drawn before regeneration
+  var PARTICLE_LINE_WIDTH = 1.5;              // line width of a drawn particle
+  var PARTICLE_MULTIPLIER = 1/75;              // particle count scalar (completely arbitrary--this values looks nice)
   var PARTICLE_REDUCTION = 0.75;            // reduce particle count to this much of normal for mobile devices
   var FRAME_RATE = 50;                      // desired milliseconds per frame
   var BOUNDARY = 0.45;
@@ -39,6 +39,8 @@ var Windy = function( params ){
 
 
   var createWindBuilder = function(uComp, vComp) {
+      //var uData = latComps, vData = lonComps;
+
       var uData = uComp.data, vData = vComp.data;
       return {
           header: uComp.header,
@@ -78,7 +80,7 @@ var Windy = function( params ){
     }
   */
   var buildGrid = function(data, callback) {
-      var builder = createBuilder(data);
+      var builder = createBuilder(data);              // receives an obj with header and data(){return [xComp, yComp]}
       // North West corner:   (41.152815, -81.353040)
       // Center:              (41.147395, -81.346921)
       // South East corner:   (41.141018, -81.335271)
@@ -99,7 +101,7 @@ var Windy = function( params ){
       for (var j = 0; j < nj; j++) {
           var row = [];
           for (var i = 0; i < ni; i++, p++) {
-              row[i] = builder.data(p);
+              row[i] = builder.data(p); //set data
           }
           if (isContinuous) {
               // For wrapped grids, duplicate first column as last column to simplify interpolation logic
@@ -108,12 +110,13 @@ var Windy = function( params ){
           grid[j] = row;
       }
 
+      // passed coordinates
       function interpolate(λ, φ) {
           var i = floorMod(λ - λ0, 360) / Δλ;  // calculate longitude index in wrapped range [0, 360)
           var j = (φ0 - φ) / Δφ;                 // calculate latitude index in direction +90 to -90
 
-          var fi = Math.floor(i), ci = fi + 1;
-          var fj = Math.floor(j), cj = fj + 1;
+          var fi = Math.floor(i), ci = fi + 1;  // floor i, ceiling i
+          var fj = Math.floor(j), cj = fj + 1;  // floor j, ceiling j
 
           var row;
           if ((row = grid[fj])) {
@@ -124,7 +127,7 @@ var Windy = function( params ){
                   var g11 = row[ci];
                   if (isValue(g01) && isValue(g11)) {
                       // All four points found, so interpolate the value.
-                      return builder.interpolate(i - fi, j - fj, g00, g10, g01, g11);
+                      return builder.interpolate(i - fi, j - fj, g00, g10, g01, g11); //calls bilinearInterpolateVector
                   }
               }
           }
@@ -297,7 +300,8 @@ var Windy = function( params ){
     function interpolateColumn(x) {
         var column = [];
         for (var y = bounds.y; y <= bounds.yMax; y += 2) {
-                var coord = invert( x, y, extent );
+                var coord = invert( x, y, extent );           // invert returns coordinates [lat, lon]
+
                 if (coord) {
                     var λ = coord[0], φ = coord[1];
                     if (isFinite(λ)) {
@@ -315,6 +319,7 @@ var Windy = function( params ){
 
     (function batchInterpolate() {
                 var start = Date.now();
+
                 while (x < bounds.width) {
                     interpolateColumn(x);
                     x += 2;
@@ -387,7 +392,7 @@ var Windy = function( params ){
       particleCount *= PARTICLE_REDUCTION;
     }
 
-    var fadeFillStyle = "rgba(0, 0, 0, 0.85)";
+    var fadeFillStyle = "rgba(0, 0, 0, 0.9)";
 
     var particles = [];
     for (var i = 0; i < particleCount; i++) {

@@ -5,8 +5,9 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Wind Animation</title>
 
-    <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css">
-
+    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css"> -->
+    <link rel="stylesheet" href="css/esriStyle.css">
+    <link rel="stylesheet" href="css/myStyle.css">
     <style>
       html,body {
         width:100%;
@@ -62,6 +63,15 @@
           center: [-81.3425, 41.1480],
           zoom: 16,
           basemap: "dark-gray",
+          sliderStyle:"small"
+          // streets-night-vector
+          // satellite
+          // streets
+          // osm
+          // hybrid
+          // dark-gray-vector
+          // dark-gray
+          // topo
         });
 
         dojo.connect(map, "onMouseMove", showCoordinates);
@@ -75,6 +85,7 @@
         }
 
         map.on("load", mapLoaded);
+
         function mapLoaded() {
           // Add raster layer
           if ( canvasSupport ) {
@@ -85,6 +96,8 @@
             map.on("extent-change", redraw);
             map.on("resize", function(){});
             map.on("zoom-start", redraw);
+            document.getElementById("reloadButton").addEventListener("click", redraw);
+
             //map.on("pan-start", redraw);
             var layersRequest = esriRequest({
               url: './gfs2.json',
@@ -93,7 +106,7 @@
             });
             layersRequest.then(
               function(response) {
-                windy = new Windy({ canvas: rasterLayer._element, data: response });
+                windy = new Windy({ canvas: rasterLayer._element, data: gfs });
                 redraw();
             }, function(error) {
                 console.log("Error: ", error.message);
@@ -125,10 +138,20 @@
         }
       });
     </script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </head>
 
   <body >
-     <div id="mapCanvas" style="height:100%;">
+    <nav class="navbar navbar-inverse" style="margin-bottom: 0px;">
+      <div class="container-fluid">
+        <button id="reloadButton" class="btn btn-danger navbar-btn">Reload Page</button>
+      </div>
+    </nav>
+    <div id="mapCanvas" style="height:100%;">
        <span id="info" style="position:absolute; left:15px; bottom:5px; color:lightgrey; z-index:50;"></span>
     </div>
      </div>
