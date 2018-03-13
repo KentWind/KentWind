@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-
 <?php
     define('DRIVER', 'mysql');
     define('DBHOST', 'localhost');
@@ -16,33 +14,11 @@
     } catch(PDOException $e) {
         die( $e->getMessage() );
     }
+	
+	// Buffer larger content areas like the main page content
+	ob_start();
 ?>
-
-<html lang="en">
-<head>
-	<title>Admin Panel</title>
-	
-	<meta name="viewport" content="width=device-width, initial-scale=1">	
-	<meta charset="utf-8">
-	
-	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<!-- jQuery library -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-	<!-- Latest compiled JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	
-	<link rel="stylesheet" type="text/css" href="css/admin.css">
-	
-	<link href="https://fonts.googleapis.com/css?family=Abel" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Architects+Daughter" rel="stylesheet">
-    
-</head>
-<body id=>
-
 <div class="container">
-
-    <?php include 'admin-navbar.php'; ?>
 
     <?php
         
@@ -136,7 +112,25 @@
         </div>
     </div>
     
-</div> <!-- end container -->
-  
-</body></html>
+</div> 
 
+<script type="text/javascript">
+(function() {
+	document.getElementById("linkAdminPanel").setAttribute("class", "active");
+})();
+</script>
+
+<!-- end container -->
+ 
+<?php
+	// Assign all Page Specific variables
+
+	// Basically what this does is takes the contents of the page read from the buffer (ob_start)
+	// and loads it in the right part of the master page.
+	// http://php.net/manual/en/function.ob-start.php
+	$pagecontents = ob_get_contents();
+	ob_end_clean();
+	$pagetitle = "- Admin Panel";
+	//Apply the template
+	include("master.php");
+?>
