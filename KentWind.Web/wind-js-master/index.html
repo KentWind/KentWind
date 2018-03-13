@@ -5,8 +5,8 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Wind Animation</title>
 
-    <!-- <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css"> -->
-    <link rel="stylesheet" href="css/esriStyle.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/dijit/calcite.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/esri/esri.css">
     <link rel="stylesheet" href="css/myStyle.css">
     <style>
       html,body {
@@ -15,18 +15,36 @@
         margin: 0;
         padding: 0px 0 0 0;
       }
+      #HomeButton {
+        position: absolute;
+        top: 140px;
+        left: 15px;
+        z-index: 50;
+      }
+      #BasemapToggle {
+        position: absolute;
+        top: 75px;
+        right: 20px;
+        z-index: 50;
+      }
+      .basemapToggle {
+        width: 50px;
+        height: 50px;
+      }
+      .BasemapToggle .basemapTitle {
+        width: 100%;
+        background: #333333;
+        color: #cccccc;
+      }
+      .BasemapToggle .toggleButton {
+        background: #333333;
+      }
+      .esriSimpleSlider {
+        background-color: #333333;
+        color: white;
+      }
       #mapCanvas {
         padding:0;
-      }
-      #credit {
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        color: #fff;
-        font-size: 14px;
-      }
-      #credit a {
-        color: #08c;
       }
     </style>
 
@@ -44,14 +62,14 @@
       var map, rasterLayer;
       var canvasSupport;
       require([
-        "esri/map", "esri/geometry/webMercatorUtils", "esri/layers/ArcGISTiledMapServiceLayer",
+        "esri/map", "esri/dijit/BasemapToggle", "esri/dijit/HomeButton", "esri/geometry/webMercatorUtils", "esri/layers/ArcGISTiledMapServiceLayer",
         "esri/domUtils", "esri/request",
         "dojo/parser", "dojo/number", "dojo/json", "dojo/dom",
         "dijit/registry", "plugins/RasterLayer","esri/layers/WebTiledLayer",
         "esri/config",
         "dojo/domReady!"
       ], function(
-        Map, webMercatorUtils, ArcGISTiledMapServiceLayer,
+        Map, BasemapToggle, HomeButton, webMercatorUtils, ArcGISTiledMapServiceLayer,
         domUtils, esriRequest,
         parser, number, JSON, dom,
         registry, RasterLayer, WebTiledLayer, esriConfig
@@ -63,7 +81,6 @@
           center: [-81.3425, 41.1480],
           zoom: 16,
           basemap: "dark-gray",
-          sliderStyle:"small"
           // streets-night-vector
           // satellite
           // streets
@@ -73,6 +90,17 @@
           // dark-gray
           // topo
         });
+
+        var home = new HomeButton({
+          map: map
+        }, "HomeButton");
+        home.startup();
+
+        var toggle = new BasemapToggle({
+          map: map,
+          basemap: "satellite"
+        }, "BasemapToggle");
+        toggle.startup();
 
         dojo.connect(map, "onMouseMove", showCoordinates);
         dojo.connect(map, "onMouseDrag", showCoordinates);
@@ -96,7 +124,6 @@
             map.on("extent-change", redraw);
             map.on("resize", function(){});
             map.on("zoom-start", redraw);
-            document.getElementById("reloadButton").addEventListener("click", redraw);
 
             //map.on("pan-start", redraw);
             var layersRequest = esriRequest({
@@ -119,6 +146,9 @@
         function supports_canvas() {
           return !!document.createElement("canvas").getContext;
         }
+
+        document.getElementById("reloadButton").addEventListener("click", redraw);
+
         function redraw(){
           rasterLayer._element.width = map.width;
           rasterLayer._element.height = map.height;
@@ -145,14 +175,16 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </head>
 
-  <body >
-    <nav class="navbar navbar-inverse" style="margin-bottom: 0px;">
+  <body class="calcite">
+    <nav class="navbar navbar-inverse" style="margin-bottom: 0px">
       <div class="container-fluid">
-        <button id="reloadButton" class="btn btn-danger navbar-btn">Reload Page</button>
+        <button id="reloadButton" class="btn btn-danger navbar-btn">Redraw</button>
       </div>
     </nav>
-    <div id="mapCanvas" style="height:100%;">
-       <span id="info" style="position:absolute; left:15px; bottom:5px; color:lightgrey; z-index:50;"></span>
+    <div id="mapCanvas" class = "map" style="height:100%;">
+      <div id="HomeButton"></div>
+      <div id="BasemapToggle"></div>
+      <span id="info" style="position:absolute; left:15px; bottom:5px; color:lightgrey; z-index:50;"></span>
     </div>
      </div>
   </body>

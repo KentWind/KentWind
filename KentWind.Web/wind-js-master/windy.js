@@ -438,7 +438,9 @@ var Windy = function( params ){
     function draw() {
         // Fade existing particle trails.
         var prev = g.globalCompositeOperation;
-        g.globalCompositeOperation = "destination-in";
+        g.globalCompositeOperation = "destination-in";    // The existing canvas content is kept where
+                                                          // both the new shape and existing canvas
+                                                          // content overlap. Everything else is made transparent
         g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
         g.globalCompositeOperation = prev;
 
