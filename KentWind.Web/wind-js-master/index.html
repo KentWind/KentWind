@@ -147,41 +147,49 @@
         map.on("load", mapLoaded);
 
         function mapLoaded() {
-          // Add raster layers
-          if ( canvasSupport ) {
-            rasterLayer = new RasterLayer(null, {
-              opacity: 1
-            });
-            map.addLayer(rasterLayer);
-            map.on("extent-change", redraw);
-            map.on("resize", function(){});
-            map.on("zoom-start", redraw);
 
-            var symbol = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
-
-            windy = new Windy({ canvas: rasterLayer._element, data: gfs });
-            redraw();
-            document.getElementById("reloadButton").addEventListener("click", function(){
-              NEW_INFO_AVAILABLE = true;
-              
-            });
-
-            var gl = new GraphicsLayer({ id: "circles" });
-            map.addLayer(gl);
-            map.on("click", function(e) {
-              console.log(e.mapPoint);
-              var radius = 2;
-              var circle = new Circle({
-                center: e.mapPoint,
-                radius: radius
+          function refreshData(){
+            if ( canvasSupport ) {
+              rasterLayer = new RasterLayer(null, {
+                opacity: 1
               });
-              var graphic = new Graphic(circle, symbol);
-              gl.add(graphic);
-            });
+              map.addLayer(rasterLayer);
+              map.on("extent-change", redraw);
+              map.on("resize", function(){});
+              map.on("zoom-start", redraw);
 
-          } else {
-            dom.byId("mapCanvas").innerHTML = "This browser doesn't support canvas. Visit <a target='_blank' href='http://www.caniuse.com/#search=canvas'>caniuse.com</a> for supported browsers";
+              var symbol = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
+
+              generateData();
+              windy = new Windy({ canvas: rasterLayer._element, data: gfs });
+              redraw();
+              document.getElementById("reloadButton").addEventListener("click", function(){
+                NEW_INFO_AVAILABLE = true;
+              });
+              document.getElementById("randomize").addEventListener("click", function(){
+                map.removeLayer(rasterLayer);
+                refreshData();
+              });
+
+
+              var gl = new GraphicsLayer({ id: "circles" });
+              map.addLayer(gl);
+              map.on("click", function(e) {
+                console.log(e.mapPoint);
+                var radius = 2;
+                var circle = new Circle({
+                  center: e.mapPoint,
+                  radius: radius
+                });
+                var graphic = new Graphic(circle, symbol);
+                gl.add(graphic);
+              });
+
+            } else {
+              dom.byId("mapCanvas").innerHTML = "This browser doesn't support canvas. Visit <a target='_blank' href='http://www.caniuse.com/#search=canvas'>caniuse.com</a> for supported browsers";
+            }
           }
+          refreshData();
         }
         // does the browser support canvas?
         function supports_canvas() {
@@ -216,7 +224,9 @@
   <body class="calcite">
     <nav class="navbar navbar-inverse" style="margin-bottom: 0px;">
       <div class="container-fluid">
-        <button id="reloadButton" class="btn btn-danger navbar-btn">Test</button>
+        <button id="reloadButton" class="btn btn-danger navbar-btn">Kill Switch</button>
+        <button id="randomize" class="btn btn-danger navbar-btn">Randomize</button>
+
       </div>
     </nav>
     <div id="mapCanvas" class = "map" style="height:100%;">
