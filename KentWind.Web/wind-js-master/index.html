@@ -5,8 +5,9 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Wind Animation</title>
 
+    <!--ORIGINAL CSS <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css"> -->
     <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/dijit/calcite.css">
-  <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/esri/esri.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/esri/esri.css">
     <link rel="stylesheet" href="css/myStyle.css">
     <style>
       html,body {
@@ -62,14 +63,18 @@
       var map, rasterLayer;
       var canvasSupport;
       require([
-        "esri/map", "esri/dijit/BasemapToggle", "esri/dijit/HomeButton", "esri/geometry/webMercatorUtils", "esri/layers/ArcGISTiledMapServiceLayer",
+        "esri/map", "esri/Color", "esri/symbols/SimpleMarkerSymbol",
+	"esri/symbols/SimpleLineSymbol", "esri/geometry/Circle", "esri/symbols/SimpleFillSymbol",
+        "esri/graphic", "esri/layers/GraphicsLayer", "esri/dijit/BasemapToggle",
+        "esri/dijit/HomeButton", "esri/geometry/webMercatorUtils", "esri/layers/ArcGISTiledMapServiceLayer",
         "esri/domUtils", "esri/request",
         "dojo/parser", "dojo/number", "dojo/json", "dojo/dom",
         "dijit/registry", "plugins/RasterLayer","esri/layers/WebTiledLayer",
         "esri/config",
         "dojo/domReady!"
       ], function(
-        Map, BasemapToggle, HomeButton, webMercatorUtils, ArcGISTiledMapServiceLayer,
+        Map, Color, SimpleMarkerSymbol, SimpleLineSymbol, Circle, SimpleFillSymbol,
+        Graphic, GraphicsLayer, BasemapToggle, HomeButton, webMercatorUtils, ArcGISTiledMapServiceLayer,
         domUtils, esriRequest,
         parser, number, JSON, dom,
         registry, RasterLayer, WebTiledLayer, esriConfig
@@ -90,6 +95,33 @@
           // dark-gray
           // topo
         });
+
+      //   var points = [];
+      //   for(var i = 0; i < data.length; i++) {
+      //     points[i] = {
+      //       type: "point",
+      //       longitude: data[i].lon,
+      //       latitude: data[i].lon
+      //     }
+      //   }
+      //
+      // var markerSymbol = {
+      //    type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+      //    color: [226, 119, 40],
+      //    outline: { // autocasts as new SimpleLineSymbol()
+      //      color: [255, 255, 255],
+      //      width: 6
+      //    }
+      //  };
+      //
+      // var pointGraphics = [];
+      // for (var i = 0; i < points.length; i++) {
+      //   pointGraphics[i] = new Graphic({
+      //       geometry: points[i],
+      //       symbol: markerSymbol
+      //     });
+      // }
+
 
         var home = new HomeButton({
           map: map
@@ -115,7 +147,7 @@
         map.on("load", mapLoaded);
 
         function mapLoaded() {
-          // Add raster layer
+          // Add raster layers
           if ( canvasSupport ) {
             rasterLayer = new RasterLayer(null, {
               opacity: 1
@@ -125,19 +157,28 @@
             map.on("resize", function(){});
             map.on("zoom-start", redraw);
 
-            //map.on("pan-start", redraw);
-            var layersRequest = esriRequest({
-              url: './gfs2.json',
-              content: {},
-              handleAs: "json"
+            var symbol = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
+
+            windy = new Windy({ canvas: rasterLayer._element, data: gfs });
+            redraw();
+            document.getElementById("reloadButton").addEventListener("click", function(){
+              NEW_INFO_AVAILABLE = true;
+              
             });
-            layersRequest.then(
-              function(response) {
-                windy = new Windy({ canvas: rasterLayer._element, data: gfs });
-                redraw();
-            }, function(error) {
-                console.log("Error: ", error.message);
+
+            var gl = new GraphicsLayer({ id: "circles" });
+            map.addLayer(gl);
+            map.on("click", function(e) {
+              console.log(e.mapPoint);
+              var radius = 2;
+              var circle = new Circle({
+                center: e.mapPoint,
+                radius: radius
+              });
+              var graphic = new Graphic(circle, symbol);
+              gl.add(graphic);
             });
+
           } else {
             dom.byId("mapCanvas").innerHTML = "This browser doesn't support canvas. Visit <a target='_blank' href='http://www.caniuse.com/#search=canvas'>caniuse.com</a> for supported browsers";
           }
@@ -147,14 +188,11 @@
           return !!document.createElement("canvas").getContext;
         }
 
-        document.getElementById("reloadButton").addEventListener("click", redraw);
-
         function redraw(){
           rasterLayer._element.width = map.width;
           rasterLayer._element.height = map.height;
           windy.stop();
           var extent = map.geographicExtent;
-
 
 
           setTimeout(function(){
@@ -176,15 +214,15 @@
   </head>
 
   <body class="calcite">
-    <nav class="navbar navbar-inverse" style="margin-bottom: 0px">
+    <nav class="navbar navbar-inverse" style="margin-bottom: 0px;">
       <div class="container-fluid">
-        <button id="reloadButton" class="btn btn-danger navbar-btn">Redraw</button>
+        <button id="reloadButton" class="btn btn-danger navbar-btn">Test</button>
       </div>
     </nav>
     <div id="mapCanvas" class = "map" style="height:100%;">
       <div id="HomeButton"></div>
       <div id="BasemapToggle"></div>
-      <span id="info" style="position:absolute; left:15px; bottom:5px; color:lightgrey; z-index:50;"></span>
+      <span id="info" style="position:absolute; left:15px; bottom:10px; color:lightgrey; z-index:50;"></span>
     </div>
      </div>
   </body>

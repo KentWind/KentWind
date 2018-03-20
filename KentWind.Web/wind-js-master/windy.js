@@ -9,7 +9,7 @@
     The "start" method takes the bounds of the map at its current extent and starts the whole gridding,
     interpolation and animation process.
 */
-
+var NEW_INFO_AVAILABLE = false;
 var Windy = function( params ){
   var VELOCITY_SCALE = 0.00000175;             // scale for wind velocity (completely arbitrary--this value looks nice)
   var INTENSITY_SCALE_STEP = 10;            // step size of particle intensity color scale
@@ -20,6 +20,7 @@ var Windy = function( params ){
   var PARTICLE_REDUCTION = 0.75;            // reduce particle count to this much of normal for mobile devices
   var FRAME_RATE = 50;                      // desired milliseconds per frame
   var BOUNDARY = 0.45;
+ // ADDED BY US
 
   var NULL_WIND_VECTOR = [NaN, NaN, null];  // singleton for no wind in the form: [u, v, magnitude]
   var TRANSPARENT_BLACK = [255, 0, 0, 0];
@@ -360,6 +361,7 @@ var Windy = function( params ){
           "rgba(" + hexToR('#fe3705') + ", " + hexToG('#fe3705') + ", " + hexToB('#fe3705') + ", " + 0.5 + ")",
           "rgba(" + hexToR('#ff0000') + ", " + hexToG('#ff0000') + ", " + hexToB('#ff0000') + ", " + 0.5 + ")"
 
+            blue
           "rgba(" + hexToR('#00ffff') + ", " + hexToG('#00ffff') + ", " + hexToB('#00ffff') + ", " + 0.5 + ")",
           "rgba(" + hexToR('#64f0ff') + ", " + hexToG('#64f0ff') + ", " + hexToB('#64f0ff') + ", " + 0.5 + ")",
           "rgba(" + hexToR('#87e1ff') + ", " + hexToG('#87e1ff') + ", " + hexToB('#87e1ff') + ", " + 0.5 + ")",
@@ -402,7 +404,7 @@ var Windy = function( params ){
     function evolve() {
         buckets.forEach(function(bucket) { bucket.length = 0; });
         particles.forEach(function(particle) {
-            if (particle.age > MAX_PARTICLE_AGE) {
+            if (particle.age > MAX_PARTICLE_AGE && !NEW_INFO_AVAILABLE) {
                 field.randomize(particle).age = 0;
             }
             var x = particle.x;
@@ -438,13 +440,14 @@ var Windy = function( params ){
     function draw() {
         // Fade existing particle trails.
         var prev = g.globalCompositeOperation;
-        g.globalCompositeOperation = "destination-in";    // The existing canvas content is kept where
+        g.globalCompositeOperation = "destination-in";    // Destination-In: The existing canvas content is kept where
                                                           // both the new shape and existing canvas
                                                           // content overlap. Everything else is made transparent
         g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
         g.globalCompositeOperation = prev;
 
         // Draw new particle trails.
+
         buckets.forEach(function(bucket, i) {
             if (bucket.length > 0) {
                 g.beginPath();
