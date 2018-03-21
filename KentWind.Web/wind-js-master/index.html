@@ -136,12 +136,18 @@
 
         dojo.connect(map, "onMouseMove", showCoordinates);
         dojo.connect(map, "onMouseDrag", showCoordinates);
+        dojo.connect(map, "onClick", logCoordinates);
 
         function showCoordinates(evt) {
           //the map is in web mercator but display coordinates in geographic (lat, long)
           var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
           //display mouse coordinates
           dom.byId("info").innerHTML = mp.x.toFixed(5) + ", " + mp.y.toFixed(5);
+        }
+
+        function logCoordinates(evt){
+          var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
+          console.log(mp.x.toFixed(5) + ", " + mp.y.toFixed(5));
         }
 
         map.on("load", mapLoaded);
@@ -168,6 +174,7 @@
               });
               document.getElementById("randomize").addEventListener("click", function(){
                 map.removeLayer(rasterLayer);
+                windy.stop();
                 refreshData();
               });
 
@@ -175,7 +182,6 @@
               var gl = new GraphicsLayer({ id: "circles" });
               map.addLayer(gl);
               map.on("click", function(e) {
-                console.log(e.mapPoint);
                 var radius = 2;
                 var circle = new Circle({
                   center: e.mapPoint,
