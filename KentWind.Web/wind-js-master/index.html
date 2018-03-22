@@ -291,37 +291,30 @@
       });
 	  
 	  $(function() {
-		$("#RGBA-RSlider").on('change input', function() {
-			var R = parseInt($("#RGBA-RSlider").val());
-			var G = parseInt($("#RGBA-GSlider").val());
-			var B = parseInt($("#RGBA-BSlider").val());
-			var A = parseInt($("#RGBA-ASlider").val());
-			
-			$("colorBox").css("background-color: rgba(" + R + ", " + G + ", " + B + ", " + A + ");");
-		  });
-	  
 		  var sliderValue = $("#slider").val();
 		  
-		  $("#sliderValue").text("Live Data!");
+		  $("#sliderValue").html("<b style='color: red; text-decoration: underline;'>LIVE</b>");
 		  
 		  $("#slider").on('change input', function() {
-		     sliderValue = $("#slider").val() / 60;
-			 var sliderValueText = sliderValue + " minutes ago";
-			 if ($("#slider").val() == 0)
+			
+		     sliderValue = $("#slider").val();
+			 
+			 if (parseInt(sliderValue) == 0)
 			 {
-				$("#sliderValue").text("Live Data!");
+				$("#sliderValue").html("<b style='color: red; text-decoration: underline;'>LIVE</b>");
 			 }
-			 else if($("#slider").val() >= 3600 && $("#slider").val() < 86400)
+			 else
 			 {
-				sliderValue = sliderValue / 60;
-				sliderValueText = sliderValue + " hour(s) ago";
+				var sliderDays = sliderValue / 60 / 60 / 24;
+				var sliderHours = sliderValue / 60 / 60;
+				var sliderMinutes = sliderValue / 60;
+				var sliderValueText = sliderDays + " day(s) ago | " + sliderHours + " hour(s) ago | " + sliderMinutes + " minute(s) ago";
+				$("#sliderValue").text(sliderValueText);
 			 }
-			 else if ($("#slider").val() > 86400)
-			 {
-				sliderValue = $("#slider").val() / 24 / 60 / 60;
-				sliderValueText = sliderValue + " day(s) ago";
-			 }
-			 $("#sliderValue").text(sliderValueText);
+		  });
+		  
+		  $("input[class=colorSlider]").on('change input', function() {
+			changeColorBox();
 		  });
 		  
 		  var today = new Date();
@@ -387,6 +380,17 @@
 			
 			$("#endDaysSliderValue").text(days + " days ago - Date: " + dateString);
 		  }
+		  
+		  function changeColorBox()
+		  {
+			var R = parseInt($("#RGBA-RSlider").val());
+			var G = parseInt($("#RGBA-GSlider").val());
+			var B = parseInt($("#RGBA-BSlider").val());
+			var A = parseInt($("#RGBA-ASlider").val());
+			
+			$("colorBox").css("background-color: rgba(" + R + ", " + G + ", " + B + ", " + A + ");");
+		  }
+		  
 		  $("#applyFilters").click(function() {
 			var R = parseInt($("#RGBA-RSlider").val());
 			var G = parseInt($("#RGBA-GSlider").val());   
@@ -443,7 +447,7 @@
 										<b>R</b>
 									</div>
 									<div class="col-6">
-										<input type="range" min="0" max="100" value="0" step="1" id="RGBA-RSlider" class="colorSlider">
+										<input type="range" min="0" max="100" value="0" step="1" id="RGBA-RSlider" name="colorSlider" class="colorSlider">
 									</div>
 								</div>
 								<div class="row">
@@ -451,7 +455,7 @@
 										<b>G</b>
 									</div>
 									<div class="col-6">
-										<input type="range" min="0" max="100" value="0" step="1" id="RGBA-GSlider" class="colorSlider">
+										<input type="range" min="0" max="100" value="0" step="1" id="RGBA-GSlider" name="colorSlider" class="colorSlider">
 									</div>
 								</div>
 								<div class="row">
@@ -459,7 +463,7 @@
 										<b>B</b>
 									</div>
 									<div class="col-6">
-										<input type="range" min="0" max="100" value="0" step="1" id="RGBA-BSlider" class="colorSlider">
+										<input type="range" min="0" max="100" value="0" step="1" id="RGBA-BSlider" name="colorSlider" class="colorSlider">
 									</div>
 								</div>
 								<div class="row">
@@ -467,7 +471,7 @@
 										<b>A</b>
 									</div>
 									<div class="col-6">
-										<input type="range" min="0" max="1" value="1" step=".01" id="RGBA-ASlider" class="colorSlider">
+										<input type="range" min="0" max="1" value="1" step=".01" id="RGBA-ASlider" name="colorSlider" class="colorSlider">
 									</div>
 								</div>
 							</div>
