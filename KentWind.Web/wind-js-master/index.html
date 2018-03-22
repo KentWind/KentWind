@@ -95,7 +95,7 @@
     <script>
 
     var CURRENTID = 0;
-
+	var windy;
       var map, rasterLayer;
       var canvasSupport;
       require([
@@ -387,8 +387,14 @@
 			
 			$("#endDaysSliderValue").text(days + " days ago - Date: " + dateString);
 		  }
-		  
-		  
+		  $("#applyFilters").click(function() {
+			var R = parseInt($("#RGBA-RSlider").val());
+			var G = parseInt($("#RGBA-GSlider").val());   
+			var B = parseInt($("#RGBA-BSlider").val());
+			var A = parseInt($("#RGBA-RSlider").val());
+			
+			windy.modifyColors(R, G, B, A);
+		  });
 		  
 	});
     </script>
@@ -461,7 +467,7 @@
 										<b>A</b>
 									</div>
 									<div class="col-6">
-										<input type="range" min="0" max="100" value="0" step="1" id="RGBA-ASlider" class="colorSlider">
+										<input type="range" min="0" max="1" value="1" step=".01" id="RGBA-ASlider" class="colorSlider">
 									</div>
 								</div>
 							</div>
@@ -506,7 +512,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary">Apply</button>
+					<button type="button" class="btn btn-primary" id="applyFilters">Apply</button>
 				</div>
 			</div>
 		</div>
