@@ -4,6 +4,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Wind Animation</title>
+	
+	<!-- jquery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
     <!--ORIGINAL CSS <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css"> -->
     <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/dijit/calcite.css">
@@ -47,6 +50,36 @@
       #mapCanvas {
         padding:0;
       }
+	  #slider-container
+	  {
+		float: right;
+		width: 50%;
+		color: white;
+	  }
+	  #slider
+	  {
+		direction: rtl;
+	  }
+	  .colorSlider
+	  {
+		width: 40% !important;
+	  }
+	  .averageSlider
+	  {
+		width: 40% !important;
+	  }
+	  #filtersModal .modal-content
+	  {
+		background-color: rgba(0, 0, 0, 0.5);
+		color: white;
+	  }
+	  #colorBox 
+	  {
+		background-color: rgba(0, 0, 0, 0);
+		height: 20px;
+		width: 20px;
+		border: 1px solid white;
+	  }
     </style>
 
     <script>
@@ -60,6 +93,9 @@
     <script src="./windy.js"></script>
     <script src="https://js.arcgis.com/3.20compact/"></script>
     <script>
+
+    var CURRENTID = 0;
+	var windy;
       var map, rasterLayer;
       var canvasSupport;
       require([
@@ -147,18 +183,65 @@
 
         function logCoordinates(evt){
           var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
+<<<<<<< HEAD
           console.log(mp.y.toFixed(5) + ", " + mp.x.toFixed(5));
+=======
+          //console.log(mp.x.toFixed(5) + ", " + mp.y.toFixed(5));
+>>>>>>> 01960b6c8b01cf6156d790ea57759fb861494642
         }
+
 
         map.on("load", mapLoaded);
 
         function mapLoaded() {
 
+          document.getElementById("changeColor").addEventListener("click", function(){
+            //windy.newInfoAvailable();
+            //windy.modifyColors(0, 100, 0, 1);
+            //windy.modifyColors( randomInRange(0, 100), randomInRange(0, 100), randomInRange(0, 100), randomInRange(.5, 1) );
+            //windy.modifyColors(Math.floor(Math.random() * 176), Math.floor(Math.random() * 176), Math.floor(Math.random() * 176) , 1);
+          });
+          document.getElementById("randomize").addEventListener("click", function(){
+            //windy.stopEvolve();
+
+            windy.newInfoAvailable();
+            //map.removeLayer(rasterLayer);
+            //windy.stop();
+            //console.log("Button clicked");
+            ++CURRENTID;
+            refreshData();
+          });
+
           function refreshData(){
             if ( canvasSupport ) {
+
+              if ( typeof rasterLayer !== 'undefined' ) {
+                oldLayer = rasterLayer;
+              }
+
               rasterLayer = new RasterLayer(null, {
                 opacity: 1
               });
+
+              if ( typeof oldLayer !== 'undefined') {
+
+                var clearFuncVar;
+
+                oldWindy = windy;
+
+                function clearOldLayer() {
+                  oldWindy.stopEvolve();
+                  //oldWindy.newInfoAvailable();
+                  oldWindy.stop();
+
+                  map.removeLayer(oldLayer);
+                  clearInterval(clearFuncVar);
+                }
+
+                clearFuncVar = setInterval(clearOldLayer, 2000);
+
+                //map.removeLayer(oldLayer);
+              }
               map.addLayer(rasterLayer);
               map.on("extent-change", redraw);
               map.on("resize", function(){});
@@ -167,17 +250,8 @@
               var symbol = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
 
               generateData();
-              windy = new Windy({ canvas: rasterLayer._element, data: gfs });
+              windy = new Windy({ canvas: rasterLayer._element, data: gfs }, CURRENTID);
               redraw();
-              document.getElementById("reloadButton").addEventListener("click", function(){
-                NEW_INFO_AVAILABLE = true;
-              });
-              document.getElementById("randomize").addEventListener("click", function(){
-                map.removeLayer(rasterLayer);
-                windy.stop();
-                refreshData();
-              });
-
 
               var gl = new GraphicsLayer({ id: "circles" });
               map.addLayer(gl);
@@ -219,6 +293,118 @@
           },0);
         }
       });
+	  
+	  $(function() {
+		  var sliderValue = $("#slider").val();
+		  
+		  $("#sliderValue").html("<b style='color: red; text-decoration: underline;'>LIVE</b>");
+		  
+		  $("#slider").on('change input', function() {
+			
+		     sliderValue = $("#slider").val();
+			 
+			 if (parseInt(sliderValue) == 0)
+			 {
+				$("#sliderValue").html("<b style='color: red; text-decoration: underline;'>LIVE</b>");
+			 }
+			 else
+			 {
+				var sliderDays = sliderValue / 60 / 60 / 24;
+				var sliderHours = sliderValue / 60 / 60;
+				var sliderMinutes = sliderValue / 60;
+				var sliderValueText = sliderDays + " day(s) ago | " + sliderHours + " hour(s) ago | " + sliderMinutes + " minute(s) ago";
+				$("#sliderValue").text(sliderValueText);
+			 }
+		  });
+		  
+		  $("input[class=colorSlider]").on('change input', function() {
+			changeColorBox();
+		  });
+		  
+		  var today = new Date();
+		  var todayString = today.getMonth() + 1 + "/" + today.getDate() + "/" + today.getFullYear();
+		  $("#endDaysSliderValue").text("0 days ago - Date: " + todayString);
+		  $("#fromDaysSliderValue").text("0 days ago - Date: " + todayString);
+		  
+		  $("#fromDaysSlider").on('change input', function() {
+			changeFromDaysSlider();
+			updateEndDaysSliderText();
+		  });
+		  
+		  $("#endDaysSlider").on('change input', function() {
+			changeEndDaysSlider();
+			updateFromDaysSliderText();
+		  });
+		  
+		  $("#MapTypeOption").change(function () {
+			if ($('input[name=maptype]:checked', '#MapTypeOption').val() == "Average")
+			{
+				$("#averageFilters").removeClass("hidden");
+			}
+			else
+			{
+				$("#averageFilters").addClass("hidden");
+			}
+		  });
+		  
+		  function changeFromDaysSlider()
+		  {
+			updateFromDaysSliderText();
+			
+			if(parseInt($("#endDaysSlider").val()) < parseInt($("#fromDaysSlider").val()))
+			{
+				$("#endDaysSlider").val($("#fromDaysSlider").val());
+			}
+		  }
+		  
+		  function changeEndDaysSlider()
+		  {
+			updateEndDaysSliderText();
+			
+			if(parseInt($("#endDaysSlider").val()) < parseInt($("#fromDaysSlider").val()))
+			{
+				$("#fromDaysSlider").val($("#endDaysSlider").val());
+			}
+		  }
+		  
+		  function updateFromDaysSliderText()
+		  {
+			var days = $("#fromDaysSlider").val();
+			var date = new Date(new Date().setDate(today.getDate()-days));
+			var dateString = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
+			
+			$("#fromDaysSliderValue").text(days + " days ago - Date: " + dateString);
+		  }
+		  
+		  function updateEndDaysSliderText()
+		  {
+			var days = $("#endDaysSlider").val();
+			var date = new Date(new Date().setDate(today.getDate()-days));
+			var dateString = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
+			
+			$("#endDaysSliderValue").text(days + " days ago - Date: " + dateString);
+		  }
+		  
+		  function changeColorBox()
+		  {
+			var R = parseInt($("#RGBA-RSlider").val());
+			var G = parseInt($("#RGBA-GSlider").val());
+			var B = parseInt($("#RGBA-BSlider").val());
+			var A = parseInt($("#RGBA-ASlider").val());
+			
+			$("colorBox").css("background-color: rgba(" + R + ", " + G + ", " + B + ", " + A + ");");
+		  }
+		  
+		  $("#applyFilters").click(function() {
+			var R = parseInt($("#RGBA-RSlider").val());
+			var G = parseInt($("#RGBA-GSlider").val());   
+			var B = parseInt($("#RGBA-BSlider").val());
+			var A = parseInt($("#RGBA-RSlider").val());
+			
+			windy.modifyColors(R, G, B, A);
+		  });
+		  
+	});
     </script>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -230,9 +416,13 @@
   <body class="calcite">
     <nav class="navbar navbar-inverse" style="margin-bottom: 0px;">
       <div class="container-fluid">
-        <button id="reloadButton" class="btn btn-danger navbar-btn">Kill Switch</button>
+        <button id="changeColor" class="btn btn-danger navbar-btn">Change Color</button>
         <button id="randomize" class="btn btn-danger navbar-btn">Randomize</button>
-
+		<button id="filterButton" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#filtersModal">Filters</button>
+		<div id="slider-container">
+			<b>Data Status: </b><span id="sliderValue"></span>
+			<input type="range" min="0" max="2592000" value="0" step="900" class="slider" id="slider">
+		</div>
       </div>
     </nav>
     <div id="mapCanvas" class = "map" style="height:100%;">
@@ -240,7 +430,102 @@
       <div id="BasemapToggle"></div>
       <span id="info" style="position:absolute; left:15px; bottom:10px; color:lightgrey; z-index:50;"></span>
     </div>
-     </div>
+	
+	<!-- Filters Modal -->
+	<div class="modal fade" id="filtersModal" role="dialog">
+		<div class="modal-dialog">
+			<!-- Modal content -->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h2 class="modal-title"><strong>WindMap Filter</strong></h4>
+				</div>
+				<div class="modal-body">
+					<div class="container">
+						<div class="row">
+							<div class="container">
+								<h4><b>Color Changer (RGBA)</b></h4>
+								<div id="colorBox"></div>
+								<div class="row">
+									<div class="col-6">
+										<b>R</b>
+									</div>
+									<div class="col-6">
+										<input type="range" min="0" max="100" value="0" step="1" id="RGBA-RSlider" name="colorSlider" class="colorSlider">
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-6">
+										<b>G</b>
+									</div>
+									<div class="col-6">
+										<input type="range" min="0" max="100" value="0" step="1" id="RGBA-GSlider" name="colorSlider" class="colorSlider">
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-6">
+										<b>B</b>
+									</div>
+									<div class="col-6">
+										<input type="range" min="0" max="100" value="0" step="1" id="RGBA-BSlider" name="colorSlider" class="colorSlider">
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-6">
+										<b>A</b>
+									</div>
+									<div class="col-6">
+										<input type="range" min="0" max="1" value="1" step=".01" id="RGBA-ASlider" name="colorSlider" class="colorSlider">
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-6">
+								<h4><b>Map Type</b></h4>
+							</div>
+							<div class="col-6">
+								<div id="MapTypeOption">
+									<input type="radio" class="maptype" name="maptype" value="Live" checked>Live <br />
+									<input type="radio" class="maptype" name="maptype" value="Average" id="AverageRadioButton">Average
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div id="averageFilters" class="hidden">
+								<div class="container">
+									<div class="row">
+										<h4><strong>Average Filters</strong></h4>
+									</div>
+									<div class="row">
+										<div class="col-6">
+											<b>From Date:</b> <span id="fromDaysSliderValue"></span> 
+										</div>
+										<div class="col-6">
+											<input type="range" min="0" max="30" value="0" step="1" id="fromDaysSlider" class="averageSlider">
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-6">
+											<b>To Date:</b> <span id="endDaysSliderValue"></span> 
+										</div>
+										<div class="col-6">
+											<input type="range" min="0" max="30" value="0" step="1" id="endDaysSlider" class="averageSlider">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="applyFilters">Apply</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
   </body>
 
 </html>
