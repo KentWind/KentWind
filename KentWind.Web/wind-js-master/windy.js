@@ -9,8 +9,8 @@
     The "start" method takes the bounds of the map at its current extent and starts the whole gridding,
     interpolation and animation process.
 */
-var NEW_INFO_AVAILABLE = false;
-var Windy = function( params ){
+
+var Windy = function( params, current_ID ){
   var VELOCITY_SCALE = 0.00000175;             // scale for wind velocity (completely arbitrary--this value looks nice)
   var INTENSITY_SCALE_STEP = 10;            // step size of particle intensity color scale
   var MAX_WIND_INTENSITY = 20;              // wind velocity at which particle intensity is maximum (m/s)
@@ -20,6 +20,15 @@ var Windy = function( params ){
   var PARTICLE_REDUCTION = 0.75;            // reduce particle count to this much of normal for mobile devices
   var FRAME_RATE = 50;                      // desired milliseconds per frame
   var BOUNDARY = 0.45;
+  var ID = -1;
+  var STOPEVOLVING = false;
+  var NEW_INFO_AVAILABLE = false;
+
+  var BASE_RED = 100;
+  var BASE_GREEN = 100;
+  var BASE_BLUE = 0;
+  var BASE_ALPHA = 1;
+  //var BASE_COLOR = 100;
  // ADDED BY US
 
   var NULL_WIND_VECTOR = [NaN, NaN, null];  // singleton for no wind in the form: [u, v, magnitude]
@@ -27,6 +36,11 @@ var Windy = function( params ){
 
   var τ = 2 * Math.PI;
   var H = Math.pow(10, -5.2);
+
+  var setID = function(newid) {
+    ID = newid;
+    //console.log("set id was called");
+  };
 
   // interpolation for vectors like wind (u,v,m)
   var bilinearInterpolateVector = function(x, y, g00, g10, g01, g11) {
@@ -333,7 +347,52 @@ var Windy = function( params ){
     })();
   };
 
+  function windIntensityColorScale(step, maxWind) {
 
+      var result = [];
+      for (var i = 0; i < 9; ++ i) {
+
+          result.push(
+
+          "rgba("
+          + BASE_RED + (INTENSITY_SCALE_STEP * i)
+          + ", "
+          + BASE_GREEN + (INTENSITY_SCALE_STEP * i)
+          + ", "
+          + BASE_BLUE + (INTENSITY_SCALE_STEP * i)
+          + ", "
+          + BASE_ALPHA
+          + ")"
+
+          );
+
+      }
+
+      //var result = [
+        /*"#d73027","#f46d43","#fdae61","#fee090","#ffffbf","#e0f3f8","#abd9e9","#74add1","#4575b4"*/
+
+      result.indexFor = function(m) {  // map wind speed to a style
+          return Math.floor(Math.min(m, maxWind) / maxWind * (result.length - 1));
+      };
+      return result;
+  }
+
+  var colorStyles;
+  var buckets;
+
+  var modifyColors = function(red, green, blue, alpha) {
+    BASE_RED = red;
+    BASE_GREEN = green;
+    BASE_BLUE = blue;
+    BASE_ALPHA = alpha;
+
+    colorStyles = windIntensityColorScale(INTENSITY_SCALE_STEP, MAX_WIND_INTENSITY);
+    buckets = colorStyles.map(function() { return []; });
+  };
+
+
+  //var colorStyles;
+  //var buckets;
   var animate = function(bounds, field) {
 
     function asColorStyle(r, g, b, a) {
@@ -345,49 +404,13 @@ var Windy = function( params ){
     function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
     function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
 
-    function windIntensityColorScale(step, maxWind) {
 
-        var result = [
-          "#d73027","#f46d43","#fdae61","#fee090","#ffffbf","#e0f3f8","#abd9e9","#74add1","#4575b4"
-          /* blue to red
-          "rgba(" + hexToR('#178be7') + ", " + hexToG('#178be7') + ", " + hexToB('#178be7') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#8888bd') + ", " + hexToG('#8888bd') + ", " + hexToB('#8888bd') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#b28499') + ", " + hexToG('#b28499') + ", " + hexToB('#b28499') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#cc7e78') + ", " + hexToG('#cc7e78') + ", " + hexToB('#cc7e78') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#de765b') + ", " + hexToG('#de765b') + ", " + hexToB('#de765b') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#ec6c42') + ", " + hexToG('#ec6c42') + ", " + hexToB('#ec6c42') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#f55f2c') + ", " + hexToG('#f55f2c') + ", " + hexToB('#f55f2c') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#fb4f17') + ", " + hexToG('#fb4f17') + ", " + hexToB('#fb4f17') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#fe3705') + ", " + hexToG('#fe3705') + ", " + hexToB('#fe3705') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#ff0000') + ", " + hexToG('#ff0000') + ", " + hexToB('#ff0000') + ", " + 0.5 + ")"
 
-            blue
-          "rgba(" + hexToR('#00ffff') + ", " + hexToG('#00ffff') + ", " + hexToB('#00ffff') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#64f0ff') + ", " + hexToG('#64f0ff') + ", " + hexToB('#64f0ff') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#87e1ff') + ", " + hexToG('#87e1ff') + ", " + hexToB('#87e1ff') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#a0d0ff') + ", " + hexToG('#a0d0ff') + ", " + hexToB('#a0d0ff') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#b5c0ff') + ", " + hexToG('#b5c0ff') + ", " + hexToB('#b5c0ff') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#c6adff') + ", " + hexToG('#c6adff') + ", " + hexToB('#c6adff') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#d49bff') + ", " + hexToG('#d49bff') + ", " + hexToB('#d49bff') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#e185ff') + ", " + hexToG('#e185ff') + ", " + hexToB('#e185ff') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#ec6dff') + ", " + hexToG('#ec6dff') + ", " + hexToB('#ec6dff') + ", " + 0.5 + ")",
-          "rgba(" + hexToR('#ff1edb') + ", " + hexToG('#ff1edb') + ", " + hexToB('#ff1edb') + ", " + 0.5 + ")"
-          */
-        ]
-        /*
-        var result = [];
-        for (var j = 225; j >= 100; j = j - step) {
-          result.push(asColorStyle(j, j, j, 1));
-        }
-        */
-        result.indexFor = function(m) {  // map wind speed to a style
-            return Math.floor(Math.min(m, maxWind) / maxWind * (result.length - 1));
-        };
-        return result;
-    }
+    //var colorStyles = windIntensityColorScale(INTENSITY_SCALE_STEP, MAX_WIND_INTENSITY);
+    //var buckets = colorStyles.map(function() { return []; });
+    colorStyles = windIntensityColorScale(INTENSITY_SCALE_STEP, MAX_WIND_INTENSITY);
+    buckets = colorStyles.map(function() { return []; });
 
-    var colorStyles = windIntensityColorScale(INTENSITY_SCALE_STEP, MAX_WIND_INTENSITY);
-    var buckets = colorStyles.map(function() { return []; });
 
     var particleCount = Math.round(bounds.width * bounds.height * PARTICLE_MULTIPLIER * .5);
     if (isMobile()) {
@@ -402,6 +425,9 @@ var Windy = function( params ){
     }
 
     function evolve() {
+      if (!STOPEVOLVING) {
+      //console.log("Evolve is being called by object: " + ID);
+
         buckets.forEach(function(bucket) { bucket.length = 0; });
         particles.forEach(function(particle) {
             if (particle.age > MAX_PARTICLE_AGE && !NEW_INFO_AVAILABLE) {
@@ -431,6 +457,7 @@ var Windy = function( params ){
             }
             particle.age += 1;
         });
+      }
     }
 
     var g = params.canvas.getContext("2d");
@@ -447,20 +474,21 @@ var Windy = function( params ){
         g.globalCompositeOperation = prev;
 
         // Draw new particle trails.
-
-        buckets.forEach(function(bucket, i) {
-            if (bucket.length > 0) {
-                g.beginPath();
-                g.strokeStyle = colorStyles[i];
-                bucket.forEach(function(particle) {
-                    g.moveTo(particle.x, particle.y);
-                    g.lineTo(particle.xt, particle.yt);
-                    particle.x = particle.xt;
-                    particle.y = particle.yt;
-                });
-                g.stroke();
-            }
-        });
+        if(!NEW_INFO_AVAILABLE){
+          buckets.forEach(function(bucket, i) {
+              if (bucket.length > 0) {
+                  g.beginPath();
+                  g.strokeStyle = colorStyles[i];
+                  bucket.forEach(function(particle) {
+                      g.moveTo(particle.x, particle.y);
+                      g.lineTo(particle.xt, particle.yt);
+                      particle.x = particle.xt;
+                      particle.y = particle.yt;
+                  });
+                  g.stroke();
+              }
+          });
+        }
     }
 
     (function frame() {
@@ -477,7 +505,9 @@ var Windy = function( params ){
     })();
   }
 
+
   var start = function( bounds, width, height, extent ){
+    setID(current_ID);
 
     var mapBounds = {
       south: deg2rad(extent[0][1]),
@@ -502,6 +532,14 @@ var Windy = function( params ){
     });
   };
 
+  var stopEvolve = function() {
+    STOPEVOLVING = true;
+  }
+
+  var newInfoAvailable = function() {
+    NEW_INFO_AVAILABLE = true;
+  }
+
   var stop = function(){
     if (windy.field) windy.field.release();
     if (windy.timer) clearTimeout(windy.timer)
@@ -511,7 +549,10 @@ var Windy = function( params ){
   var windy = {
     params: params,
     start: start,
-    stop: stop
+    stop: stop,
+    stopEvolve: stopEvolve,
+    newInfoAvailable: newInfoAvailable,
+    modifyColors: modifyColors
   };
 
   return windy;

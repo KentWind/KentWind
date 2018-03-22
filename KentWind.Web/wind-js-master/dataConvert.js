@@ -54,22 +54,27 @@ function generateData() {
   gfs[0].header.dx = GRID_SPACING;
   gfs[0].header.dy = GRID_SPACING;
 
-  var data = []
+  var data = [];
 
   // variables used to randomly generate sensor information
   var numBuildings = 64;
   var sensorsPerBuilding = 5;
   var numSensors = numBuildings * sensorsPerBuilding;
-  var minRandomSpeed = -30;
+  var minRandomSpeed = 0;
   var maxRandomSpeed = 30;
 
   // generate the random sensor values
   for(var i = 0; i < numSensors; i++) {
     data[i] = {};
+    var speed = randomInRange(minRandomSpeed, maxRandomSpeed);
+    var direction = randomInRange(0, 15);
+
+    var components = vectorToComponents(speed, direction);
+
     data[i].lat = randomInRange(41.140062, 41.153616);
     data[i].lon = randomInRange(278.648815, 278.666856);
-    data[i].xComp = randomInRange(minRandomSpeed, maxRandomSpeed);
-    data[i].yComp = randomInRange(minRandomSpeed, maxRandomSpeed);
+    data[i].xComp = components.u;
+    data[i].yComp = components.v;
   }
 
   var gridArrayLat = [];
@@ -152,9 +157,6 @@ function generateData() {
     }
   }
 
-
-
-
   var latComps = [];
   var lonComps = [];
 
@@ -166,6 +168,14 @@ function generateData() {
 
   gfs[0].data = latComps;
   gfs[1].data = lonComps;
+}
+
+function vectorToComponents(speed, direction) {
+  var theta = (-1 * ( (direction / 16) * 2 * Math.PI) ) + (Math.PI / 2);
+  //(-1 * (direction / 16) * 2 * Math.PI)) + (Math.PI / 2));
+  var v = speed * Math.sin(theta);
+  var u = speed * Math.cos(theta);
+  return {u, v};
 }
 
 function randomInRange(min, max) {

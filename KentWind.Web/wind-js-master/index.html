@@ -60,6 +60,9 @@
     <script src="./windy.js"></script>
     <script src="https://js.arcgis.com/3.20compact/"></script>
     <script>
+
+    var CURRENTID = 0;
+
       var map, rasterLayer;
       var canvasSupport;
       require([
@@ -147,18 +150,61 @@
 
         function logCoordinates(evt){
           var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
-          console.log(mp.x.toFixed(5) + ", " + mp.y.toFixed(5));
+          //console.log(mp.x.toFixed(5) + ", " + mp.y.toFixed(5));
         }
+
 
         map.on("load", mapLoaded);
 
         function mapLoaded() {
 
+          document.getElementById("changeColor").addEventListener("click", function(){
+            //windy.newInfoAvailable();
+            //windy.modifyColors(0, 100, 0, 1);
+            //windy.modifyColors( randomInRange(0, 100), randomInRange(0, 100), randomInRange(0, 100), randomInRange(.5, 1) );
+            //windy.modifyColors(Math.floor(Math.random() * 176), Math.floor(Math.random() * 176), Math.floor(Math.random() * 176) , 1);
+          });
+          document.getElementById("randomize").addEventListener("click", function(){
+            //windy.stopEvolve();
+
+            windy.newInfoAvailable();
+            //map.removeLayer(rasterLayer);
+            //windy.stop();
+            //console.log("Button clicked");
+            ++CURRENTID;
+            refreshData();
+          });
+
           function refreshData(){
             if ( canvasSupport ) {
+
+              if ( typeof rasterLayer !== 'undefined' ) {
+                oldLayer = rasterLayer;
+              }
+
               rasterLayer = new RasterLayer(null, {
                 opacity: 1
               });
+
+              if ( typeof oldLayer !== 'undefined') {
+
+                var clearFuncVar;
+
+                oldWindy = windy;
+
+                function clearOldLayer() {
+                  oldWindy.stopEvolve();
+                  //oldWindy.newInfoAvailable();
+                  oldWindy.stop();
+
+                  map.removeLayer(oldLayer);
+                  clearInterval(clearFuncVar);
+                }
+
+                clearFuncVar = setInterval(clearOldLayer, 2000);
+
+                //map.removeLayer(oldLayer);
+              }
               map.addLayer(rasterLayer);
               map.on("extent-change", redraw);
               map.on("resize", function(){});
@@ -167,17 +213,8 @@
               var symbol = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
 
               generateData();
-              windy = new Windy({ canvas: rasterLayer._element, data: gfs });
+              windy = new Windy({ canvas: rasterLayer._element, data: gfs }, CURRENTID);
               redraw();
-              document.getElementById("reloadButton").addEventListener("click", function(){
-                NEW_INFO_AVAILABLE = true;
-              });
-              document.getElementById("randomize").addEventListener("click", function(){
-                map.removeLayer(rasterLayer);
-                windy.stop();
-                refreshData();
-              });
-
 
               var gl = new GraphicsLayer({ id: "circles" });
               map.addLayer(gl);
@@ -230,7 +267,7 @@
   <body class="calcite">
     <nav class="navbar navbar-inverse" style="margin-bottom: 0px;">
       <div class="container-fluid">
-        <button id="reloadButton" class="btn btn-danger navbar-btn">Kill Switch</button>
+        <button id="changeColor" class="btn btn-danger navbar-btn">Change Color</button>
         <button id="randomize" class="btn btn-danger navbar-btn">Randomize</button>
 
       </div>
