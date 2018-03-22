@@ -142,12 +142,12 @@
           //the map is in web mercator but display coordinates in geographic (lat, long)
           var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
           //display mouse coordinates
-          dom.byId("info").innerHTML = mp.x.toFixed(5) + ", " + mp.y.toFixed(5);
+          dom.byId("info").innerHTML = mp.y.toFixed(5) + ", " + mp.x.toFixed(5);
         }
 
         function logCoordinates(evt){
           var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
-          console.log(mp.x.toFixed(5) + ", " + mp.y.toFixed(5));
+          console.log(mp.y.toFixed(5) + ", " + mp.x.toFixed(5));
         }
 
         map.on("load", mapLoaded);
