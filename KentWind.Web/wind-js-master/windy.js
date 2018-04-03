@@ -10,8 +10,11 @@
     interpolation and animation process.
 */
 
+var CURRENTID = 0;
+
 var Windy = function( params, current_ID ){
-  var VELOCITY_SCALE = 0.00000175;             // scale for wind velocity (completely arbitrary--this value looks nice)
+
+  var VELOCITY_SCALE = 0.000002;             // scale for wind velocity (completely arbitrary--this value looks nice)
   var INTENSITY_SCALE_STEP = 10;            // step size of particle intensity color scale
   var MAX_WIND_INTENSITY = 20;              // wind velocity at which particle intensity is maximum (m/s)
   var MAX_PARTICLE_AGE = 75;                // max number of frames a particle is drawn before regeneration
@@ -39,7 +42,6 @@ var Windy = function( params, current_ID ){
 
   var setID = function(newid) {
     ID = newid;
-    //console.log("set id was called");
   };
 
   // interpolation for vectors like wind (u,v,m)
@@ -127,6 +129,11 @@ var Windy = function( params, current_ID ){
 
       // passed coordinates
       function interpolate(λ, φ) {
+        // LOG //
+        // console.log(CURRENTID + " " + ID);
+        // if(ID != CURRENTID) {console.log("ERROR: " + ID);}
+
+        if (!STOPEVOLVING){
           var i = floorMod(λ - λ0, 360) / Δλ;  // calculate longitude index in wrapped range [0, 360)
           var j = (φ0 - φ) / Δφ;                 // calculate latitude index in direction +90 to -90
 
@@ -134,19 +141,23 @@ var Windy = function( params, current_ID ){
           var fj = Math.floor(j), cj = fj + 1;  // floor j, ceiling j
 
           var row;
-          if ((row = grid[fj])) {
-              var g00 = row[fi];
-              var g10 = row[ci];
-              if (isValue(g00) && isValue(g10) && (row = grid[cj])) {
-                  var g01 = row[fi];
-                  var g11 = row[ci];
-                  if (isValue(g01) && isValue(g11)) {
-                      // All four points found, so interpolate the value.
-                      return builder.interpolate(i - fi, j - fj, g00, g10, g01, g11); //calls bilinearInterpolateVector
-                  }
-              }
-          }
+          //if(!NEW_INFO_AVAILABLE){
+            if ((row = grid[fj])) {
+
+                var g00 = row[fi];
+                var g10 = row[ci];
+                if (isValue(g00) && isValue(g10) && (row = grid[cj])) {
+                    var g01 = row[fi];
+                    var g11 = row[ci];
+                    if (isValue(g01) && isValue(g11)) {
+                        // All four points found, so interpolate the value.
+                        return builder.interpolate(i - fi, j - fj, g00, g10, g01, g11); //calls bilinearInterpolateVector
+                    }
+                }
+            }
+          //}
           return null;
+        }
       }
       callback( {
           date: date,
@@ -305,7 +316,6 @@ var Windy = function( params, current_ID ){
 
 
   var interpolateField = function( grid, bounds, extent, callback ) {
-
     var projection = {};
     var velocityScale = VELOCITY_SCALE;
 
@@ -334,8 +344,9 @@ var Windy = function( params, current_ID ){
 
     (function batchInterpolate() {
                 var start = Date.now();
-
+              if (!STOPEVOLVING) {
                 while (x < bounds.width) {
+
                     interpolateColumn(x);
                     x += 2;
                     if ((Date.now() - start) > 1000) { //MAX_TASK_TIME) {
@@ -344,16 +355,19 @@ var Windy = function( params, current_ID ){
                     }
                 }
           createField(columns, bounds, callback);
+        }
     })();
   };
 
   function windIntensityColorScale(step, maxWind) {
 
       var result = [];
+
+      var colors = multiColor({r: 0, g: 169, b: 255}, {r: 255, g: 255, b: 0});
+
       for (var i = 0; i < 9; ++ i) {
 
           result.push(
-
           "rgba("
           + BASE_RED + (INTENSITY_SCALE_STEP * i)
           + ", "
@@ -363,9 +377,18 @@ var Windy = function( params, current_ID ){
           + ", "
           + BASE_ALPHA
           + ")"
-
           );
-
+          // result.push(
+          //   "rgba("
+          //   + colors[i].r
+          //   + ", "
+          //   + colors[i].g
+          //   + ", "
+          //   + colors[i].b
+          //   + ", "
+          //   + BASE_ALPHA
+          //   + ")"
+          // );
       }
 
       //var result = [
@@ -381,6 +404,7 @@ var Windy = function( params, current_ID ){
   var buckets;
 
   var modifyColors = function(red, green, blue, alpha) {
+
     BASE_RED = red;
     BASE_GREEN = green;
     BASE_BLUE = blue;
@@ -390,6 +414,24 @@ var Windy = function( params, current_ID ){
     buckets = colorStyles.map(function() { return []; });
   };
 
+  var multiColor = function(startColor, endColor) {
+    var startPosition = 0;
+    var endPosition = 9;
+
+    var colors = [];
+
+    for(var i = 0; i < endPosition; i++) {
+      var color = {};
+
+      color.r = Math.floor(startColor.r + (endColor.r - startColor.r) * (i/(endPosition - 1)));
+      color.g = Math.floor(startColor.g + (endColor.g - startColor.g) * (i/(endPosition - 1)));
+      color.b = Math.floor(startColor.b + (endColor.b - startColor.b) * (i/(endPosition - 1)));
+
+      colors.push(color);
+    }
+
+    return colors;
+   }
 
   //var colorStyles;
   //var buckets;
@@ -426,8 +468,6 @@ var Windy = function( params, current_ID ){
 
     function evolve() {
       if (!STOPEVOLVING) {
-      //console.log("Evolve is being called by object: " + ID);
-
         buckets.forEach(function(bucket) { bucket.length = 0; });
         particles.forEach(function(particle) {
             if (particle.age > MAX_PARTICLE_AGE && !NEW_INFO_AVAILABLE) {
@@ -474,7 +514,7 @@ var Windy = function( params, current_ID ){
         g.globalCompositeOperation = prev;
 
         // Draw new particle trails.
-        if(!NEW_INFO_AVAILABLE){
+       if(!NEW_INFO_AVAILABLE){
           buckets.forEach(function(bucket, i) {
               if (bucket.length > 0) {
                   g.beginPath();
@@ -494,9 +534,13 @@ var Windy = function( params, current_ID ){
     (function frame() {
         try {
             windy.timer = setTimeout(function() {
-              requestAnimationFrame(frame);
-              evolve();
-              draw();
+              if (!STOPEVOLVING) {
+                requestAnimationFrame(frame);
+                evolve();
+                draw();
+              } else {
+                return;
+              }
             }, 1000 / FRAME_RATE);
         }
         catch (e) {
@@ -540,7 +584,7 @@ var Windy = function( params, current_ID ){
     NEW_INFO_AVAILABLE = true;
   }
 
-  var stop = function(){
+  var stop = function() {
     if (windy.field) windy.field.release();
     if (windy.timer) clearTimeout(windy.timer)
   };
@@ -555,19 +599,32 @@ var Windy = function( params, current_ID ){
     modifyColors: modifyColors
   };
 
+  // shim layer with setTimeout fallback
+  window.requestAnimationFrame (function(){
+    return  window.requestAnimationFrame       ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame    ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            function( callback ){
+              window.setTimeout(callback, 1000 / 20);
+            };
+  });
+
+
   return windy;
 }
 
 
 
-// shim layer with setTimeout fallback
-window.requestAnimationFrame = (function(){
-  return  window.requestAnimationFrame       ||
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame    ||
-          window.oRequestAnimationFrame ||
-          window.msRequestAnimationFrame ||
-          function( callback ){
-            window.setTimeout(callback, 1000 / 20);
-          };
-})();
+
+// window.requestAnimationFrame = (function(){
+//   return  window.requestAnimationFrame       ||
+//           window.webkitRequestAnimationFrame ||
+//           window.mozRequestAnimationFrame    ||
+//           window.oRequestAnimationFrame ||
+//           window.msRequestAnimationFrame ||
+//           function( callback ){
+//             window.setTimeout(callback, 1000 / 20);
+//           };
+// })();
