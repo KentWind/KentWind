@@ -90,8 +90,8 @@
         }
       };
     </script>
-    <script src="./dataConvert.js"></script>
-    <script src="./windy.js"></script>
+    <script src="js/dataConvert.js"></script>
+    <script src="js/windy.js"></script>
     <script src="https://js.arcgis.com/3.20compact/"></script>
     <script>
     var CURRENTID = 0;
@@ -218,29 +218,33 @@
                 //map.removeLayer(oldLayer);
               }
               map.addLayer(rasterLayer);
-              map.on("extent-change", redraw);
-              map.on("resize", function(){});
-              map.on("zoom-start", redraw);
-              var symbol = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
+
               generateData();
               windy = new Windy({ canvas: rasterLayer._element, data: gfs }, CURRENTID);
               redraw();
-              var gl = new GraphicsLayer({ id: "circles" });
-              map.addLayer(gl);
-              map.on("click", function(e) {
-                var radius = 2;
-                var circle = new Circle({
-                  center: e.mapPoint,
-                  radius: radius
-                });
-                var graphic = new Graphic(circle, symbol);
-                gl.add(graphic);
-              });
+
             } else {
               dom.byId("mapCanvas").innerHTML = "This browser doesn't support canvas. Visit <a target='_blank' href='http://www.caniuse.com/#search=canvas'>caniuse.com</a> for supported browsers";
             }
           }
           refreshData();
+
+          map.on("extent-change", redraw);
+          map.on("resize", function(){});
+          map.on("zoom-start", redraw);
+          var symbol = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
+
+          var gl = new GraphicsLayer({ id: "circles" });
+          map.addLayer(gl);
+          map.on("click", function(e) {
+            var radius = 2;
+            var circle = new Circle({
+              center: e.mapPoint,
+              radius: radius
+            });
+            var graphic = new Graphic(circle, symbol);
+            gl.add(graphic);
+          });
         }
         // does the browser support canvas?
         function supports_canvas() {

@@ -367,28 +367,29 @@ var Windy = function( params, current_ID ){
 
       for (var i = 0; i < 9; ++ i) {
 
-          result.push(
-          "rgba("
-          + BASE_RED + (INTENSITY_SCALE_STEP * i)
-          + ", "
-          + BASE_GREEN + (INTENSITY_SCALE_STEP * i)
-          + ", "
-          + BASE_BLUE + (INTENSITY_SCALE_STEP * i)
-          + ", "
-          + BASE_ALPHA
-          + ")"
-          );
           // result.push(
-          //   "rgba("
-          //   + colors[i].r
-          //   + ", "
-          //   + colors[i].g
-          //   + ", "
-          //   + colors[i].b
-          //   + ", "
-          //   + BASE_ALPHA
-          //   + ")"
+          // "rgba("
+          // + BASE_RED + (INTENSITY_SCALE_STEP * i)
+          // + ", "
+          // + BASE_GREEN + (INTENSITY_SCALE_STEP * i)
+          // + ", "
+          // + BASE_BLUE + (INTENSITY_SCALE_STEP * i)
+          // + ", "
+          // + BASE_ALPHA
+          // + ")"
           // );
+
+          result.push(
+            "rgba("
+            + colors[i].r
+            + ", "
+            + colors[i].g
+            + ", "
+            + colors[i].b
+            + ", "
+            + BASE_ALPHA
+            + ")"
+          );
       }
 
       //var result = [
@@ -426,7 +427,7 @@ var Windy = function( params, current_ID ){
       color.r = Math.floor(startColor.r + (endColor.r - startColor.r) * (i/(endPosition - 1)));
       color.g = Math.floor(startColor.g + (endColor.g - startColor.g) * (i/(endPosition - 1)));
       color.b = Math.floor(startColor.b + (endColor.b - startColor.b) * (i/(endPosition - 1)));
-
+//mu'fka
       colors.push(color);
     }
 
@@ -596,7 +597,8 @@ var Windy = function( params, current_ID ){
     stop: stop,
     stopEvolve: stopEvolve,
     newInfoAvailable: newInfoAvailable,
-    modifyColors: modifyColors
+    modifyColors: modifyColors,
+    multiColor: multiColor
   };
 
   // shim layer with setTimeout fallback
