@@ -1,5 +1,5 @@
 <?php
-include 'DBConnect.php';
+include '../Database/DBConnect.php';
 
 $pdo = DBConnect::getInstance()->connect();
 

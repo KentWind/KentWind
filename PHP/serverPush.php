@@ -1,5 +1,5 @@
 <?php
-include 'DBConnect.php';
+include '../Database/DBConnect.php';
 
 if(isset($_POST['data'])) { //  If there is something to in the post superglobal.
     $tableEntry = $_POST['data'];
