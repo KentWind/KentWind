@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>TEST PAGE</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script type ="text/javascript" src="../JS/generator.js"></script>
+    <script type ="text/javascript" src="../js/generator.js"></script>
 </head>
 <body>
 </body>

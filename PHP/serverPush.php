@@ -1,5 +1,5 @@
 <?php
-include '../Database/DBConnect.php';
+include '../database/DBConnect.php';
 
 if(isset($_POST['data'])) { //  If there is something to in the post superglobal.
     $tableEntry = $_POST['data'];
@@ -8,7 +8,7 @@ if(isset($_POST['data'])) { //  If there is something to in the post superglobal
     $speed = $tableEntry['Speed'];
     $direction = $tableEntry['Direction'];
 
-    echo $id . " " . $speed . " " . $direction . " "; //Test if correct data pulled.
+    //echo $id . " " . $speed . " " . $direction . " "; //Test if correct data pulled.
 
     $pdo = DBConnect::getInstance()->connect();
 
@@ -23,5 +23,7 @@ if(isset($_POST['data'])) { //  If there is something to in the post superglobal
     $insertNewData = 'INSERT INTO live_data (SensorID, Speed, Direction) VALUES (' . $id . ',' . $speed . ',' . $direction . ')';
     $statement = $pdo->prepare($insertNewData);
     $statement->execute();
+
+    $pdo.close();
 }
 ?>

@@ -1,9 +1,15 @@
 <?php
-include '../Database/DBConnect.php';
+include '../database/DBConnect.php';
 
 $pdo = DBConnect::getInstance()->connect();
 
-$pullFromLive = 'SELECT * FROM live_data';
+$pullFromLive = '
+							SELECT wind_sensor.SensorID, Speed, Direction, Longitude, Latitude, Time 
+							FROM `live_data` 
+							INNER JOIN wind_sensor 
+							ON live_data.SensorID = wind_sensor.SensorID
+						 ';
+						 
 $statement = $pdo->prepare($pullFromLive);
 $statement->execute();
 
