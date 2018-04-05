@@ -13,4 +13,4 @@ function pullData() {
 }
 
 var test = pullData();
-
+console.log(test);

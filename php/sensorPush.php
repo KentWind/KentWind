@@ -5,7 +5,7 @@ echo "INVOKING";
 
 if(isset($_POST['data'])) { //  If there is something to in the post superglobal.
     $sensor = $_POST['data'];
-
+    
     $id = $sensor['SensorID'];
     $location = $sensor['Location'];
     $latitude = $sensor['Latitude'];

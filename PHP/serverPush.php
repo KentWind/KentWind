@@ -3,7 +3,7 @@ include '../database/DBConnect.php';
 
 if(isset($_POST['data'])) { //  If there is something to in the post superglobal.
     $tableEntry = $_POST['data'];
-
+    
     $id = $tableEntry['SensorID'];
     $speed = $tableEntry['Speed'];
     $direction = $tableEntry['Direction'];
