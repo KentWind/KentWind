@@ -30,7 +30,7 @@ var gfs = [{
     }
 }]
 
-function generateData() {
+function convertData() {
 
 
   LON_NW = 278.648815;      // Longitude coordinate for North West corner of sensor data

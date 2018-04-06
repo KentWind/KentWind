@@ -7,7 +7,7 @@
     <title>Wind Animation</title>
 
 	<!-- jquery -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <!--ORIGINAL CSS <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css"> -->
     <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/dijit/calcite.css">
@@ -92,6 +92,9 @@
     </script>
     <script src="js/dataConvert.js"></script>
     <script src="js/windy.js"></script>
+    <script src="js/generator.js"></script>
+    <script src="js/pullData.js"></script>
+
     <script src="https://js.arcgis.com/3.20compact/"></script>
     <script>
     var CURRENTID = 0;
@@ -131,31 +134,7 @@
           // dark-gray
           // topo
         });
-      //   var points = [];
-      //   for(var i = 0; i < data.length; i++) {
-      //     points[i] = {
-      //       type: "point",
-      //       longitude: data[i].lon,
-      //       latitude: data[i].lon
-      //     }
-      //   }
-      //
-      // var markerSymbol = {
-      //    type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-      //    color: [226, 119, 40],
-      //    outline: { // autocasts as new SimpleLineSymbol()
-      //      color: [255, 255, 255],
-      //      width: 6
-      //    }
-      //  };
-      //
-      // var pointGraphics = [];
-      // for (var i = 0; i < points.length; i++) {
-      //   pointGraphics[i] = new Graphic({
-      //       geometry: points[i],
-      //       symbol: markerSymbol
-      //     });
-      // }
+
         var home = new HomeButton({
           map: map
         }, "HomeButton");
@@ -220,6 +199,10 @@
               map.addLayer(rasterLayer);
 
               generateData();
+              var dbData = pullData();
+
+              console.log(dbData);
+
               windy = new Windy({ canvas: rasterLayer._element, data: gfs }, CURRENTID);
               redraw();
 
