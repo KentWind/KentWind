@@ -1,7 +1,7 @@
 function pullData() {
     var result = [];
     $.ajax({
-        url: '../php/serverPull.php',
+        url: 'php/utilities/serverPull.php',
         type: 'POST',
         dataType: 'json',
         async: false,

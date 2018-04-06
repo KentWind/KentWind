@@ -200,8 +200,7 @@
 
               generateData();
               var dbData = pullData();
-
-              console.log(dbData);
+              convertData(dbData);
 
               windy = new Windy({ canvas: rasterLayer._element, data: gfs }, CURRENTID);
               redraw();
@@ -211,6 +210,7 @@
             }
           }
           refreshData();
+          setInterval(refreshData, 15000);
 
           map.on("extent-change", redraw);
           map.on("resize", function(){});
