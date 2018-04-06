@@ -1,8 +1,11 @@
 <?php
 include '../database/DBConnect.php';
 
+<<<<<<< HEAD
+=======
 echo "INVOKING";
 
+>>>>>>> master
 if(isset($_POST['data'])) { //  If there is something to in the post superglobal.
     $sensor = $_POST['data'];
     
@@ -11,8 +14,11 @@ if(isset($_POST['data'])) { //  If there is something to in the post superglobal
     $latitude = $sensor['Latitude'];
     $longitude = $sensor['Longitude'];
 
+<<<<<<< HEAD
+=======
     echo $id; //Test if correct data pulled.
 
+>>>>>>> master
     $pdo = DBConnect::getInstance()->connect();
 
     $insertSensor = "INSERT INTO wind_sensor (SensorID, Location, Latitude, Longitude)
