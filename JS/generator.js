@@ -20,7 +20,7 @@ function generateData() {
         tableEntry.Speed = Math.floor(Math.random() * 100) + 1 //Random number 1-100.
         tableEntry.Direction = Math.floor(Math.random() * 15) + 1 //Random number 1-15.
         $.ajax({
-            url: '../php/serverPush.php',
+            url: 'php/utilities/serverPush.php',
             type: 'POST',
             async: false,
             data: {
@@ -50,7 +50,7 @@ function generateSensors() {
                 sensor.Longitude = SENSOR_INFO[i]['longitude'] - SENSOR_OFFSET; // Else, heading towards -180.
             }
             $.ajax({
-                url: '../php/sensorPush.php',
+                url: 'php/utilities/sensorPush.php',
                 type: 'POST',
                 aysnc: false,
                 data: {

@@ -1,8 +1,6 @@
 <?php
 include '../database/DBConnect.php';
 
-echo "INVOKING";
-
 if(isset($_POST['data'])) { //  If there is something to in the post superglobal.
     $sensor = $_POST['data'];
     
@@ -10,8 +8,6 @@ if(isset($_POST['data'])) { //  If there is something to in the post superglobal
     $location = $sensor['Location'];
     $latitude = $sensor['Latitude'];
     $longitude = $sensor['Longitude'];
-
-    echo $id; //Test if correct data pulled.
 
     $pdo = DBConnect::getInstance()->connect();
 
