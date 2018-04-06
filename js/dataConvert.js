@@ -30,10 +30,9 @@ var gfs = [{
     }
 }]
 
-function generateData() {
+function convertData(dbData) {
 
-
-  LON_NW = 278.648815;      // Longitude coordinate for North West corner of sensor data
+  LON_NW = 278.648215;      // Longitude coordinate for North West corner of sensor data
   LAT_NW = 41.153616;       // Latitude coordinate for North West corner of sensor data
 
   LON_SE = 278.666856;      // Longitude coordinate for South East corner of sensor data
@@ -63,16 +62,16 @@ function generateData() {
   var minRandomSpeed = 0;
   var maxRandomSpeed = 30;
 
-  // generate the random sensor values
-  for(var i = 0; i < numSensors; i++) {
+  // insert database sensor data into array
+  for(var i = 0; i < dbData.length; i++) {
     data[i] = {};
-    var speed = randomInRange(minRandomSpeed, maxRandomSpeed);
-    var direction = randomInRange(0, 15);
+    //var speed = randomInRange(minRandomSpeed, maxRandomSpeed);
+    //var direction = randomInRange(0, 15);
 
-    var components = vectorToComponents(speed, direction);
+    var components = vectorToComponents(parseFloat(dbData[i].Speed), parseFloat(dbData[i].Direction));
 
-    data[i].lat = randomInRange(41.140062, 41.153616);
-    data[i].lon = randomInRange(278.648815, 278.666856);
+    data[i].lat = parseFloat(dbData[i].Latitude);
+    data[i].lon = 360 + parseFloat(dbData[i].Longitude);
     data[i].xComp = components.u;
     data[i].yComp = components.v;
   }
@@ -95,6 +94,8 @@ function generateData() {
     //convert lat/lon to grid indexes
     var iIndex = Math.floor(((LAT_NW - data[i].lat) / LAT_HEIGHT) * GRID_Y);
     var jIndex = Math.floor(((data[i].lon - LON_NW) / LON_LENGTH) * GRID_X);
+
+    console.log(iIndex )
 
     var yDirection = data[i].yComp;
     var xDirection = data[i].xComp;
@@ -156,6 +157,7 @@ function generateData() {
       }
     }
   }
+
 
   var latComps = [];
   var lonComps = [];
