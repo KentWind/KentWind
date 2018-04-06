@@ -8,6 +8,11 @@ if(isset($_POST['data'])) { //  If there is something to in the post superglobal
     $speed = $tableEntry['Speed'];
     $direction = $tableEntry['Direction'];
 
+<<<<<<< HEAD
+=======
+    //echo $id . " " . $speed . " " . $direction . " "; //Test if correct data pulled.
+
+>>>>>>> master
     $pdo = DBConnect::getInstance()->connect();
 
     $moveToHistorical = 'INSERT INTO historical_data SELECT * FROM live_data WHERE SensorID = ' . $id;
