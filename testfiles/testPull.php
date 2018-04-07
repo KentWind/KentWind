@@ -11,3 +11,10 @@
 <body>
 </body>
 </html>
+
+<?php
+/*
+    NOTE:   To use this file, you must change the path of the ajax call in pullData.js to: 
+            url: '../php/utilities/serverPull.php'
+*/
+?>
