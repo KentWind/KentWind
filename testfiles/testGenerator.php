@@ -6,8 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>TEST PAGE</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script type ="text/javascript" src="../js/pullData.js"></script>
+    <script type ="text/javascript" src="../js/generator.js"></script>
 </head>
 <body>
 </body>
 </html>
+
+<?php
+/*
+    NOTE:   To use this file, you must change the path of the ajax call in generator.js to: 
+            url: '../php/utilities/serverPush.php'
+*/
+?>
