@@ -19,37 +19,45 @@
 	</ol>
 
 	<div class="container">
-		<h2><span class="glyphicon glyphicon-console"></span> The Team</h2>
+		<h2>About Us</h2>
 		<div class="jumbotron container">
 			<div class="container">
-				<h3>Front-End UI Team</h3>
-				<div class="container">
-					<p>Arnold Bykov</p>
-				</div>
-				<div class="container">
-					<p>Michael Spangler</p>
-				</div>
+				<p>Kent State University Computer Science students designing a 
+				system to measure and display the wind speeds and direction 
+				within the Kent State University main campus.</p>
 			</div>
 			
-			<div class="container">
-				<h3>Back-End UI Team</h3>
-				<div class="container">
-					<p>Logan Baker</p>
-				</div>
-				<div class="container">
-					<p>Salvatore Faetanini</p>
-				</div>
-			</div>
+			<table class="table table-hover">
+				<tr class="active">
+					<th colspan="2"><h3><span class="glyphicon glyphicon-console"></span> The Team</h3></th>
+				</tr>
+				<tr>
+					<td><b>Arnold Bykov</b></td>
+					<td>UI Team / Visualization Design & Repository Manager</td>
+				</tr>
+				<tr>
+					<td><b>Michael Spangler</b></td>
+					<td>UI Team / Visualization Design & Back-End UI</td>
+				</tr>
+				<tr>
+					<td><b>Logan Baker</b></td>
+					<td>UI Team / Back-End UI & Database</td>
+				</tr>
+				<tr>
+					<td><b>Abdel-Hakeem Badran</b></td>
+					<td>Hardware Connection & Database & Back-End UI</td>
+				</tr>
+				<tr>
+					<td><b>Daniel Bevilacqua</b></td>
+					<td>Hardware Connection & Database</td>
+				</tr>
+			</table>
 			
 			<div class="container">
-				<h3>Back-End Hardware Team</h3>
-				<div class="container">
-					<p>Abdel-Hakeem Badran</p>
-				</div>
-				<div class="container">
-					<p>Daniel Bevilacqua</p>
-				</div>
-			</div>
+				<b><i>Note:</i></b> While, generally we had defined roles throughout the lifecycle of
+				this project, every team member handled responsibilities for each other making
+				every member's role well-rounded in their participation and effort.
+			</div>	
 		</div>
 	</div>
 	
