@@ -103,8 +103,8 @@ var Windy = function( params, current_ID ){
       // South East corner:   (41.141018, -81.335271)
 
       var header = builder.header;
-      //var λ0 = header.lo1, φ0 = header.la1;  // the grid's origin (e.g., 0.0E, 90.0N)
-      λ0 = -81.35123, φ0 = 41.15368;
+      var λ0 = header.lo1, φ0 = header.la1;  // the grid's origin (e.g., 0.0E, 90.0N)
+      //λ0 = -81.35123, φ0 = 41.15368;
       var Δλ = header.dx, Δφ = header.dy;    // distance between grid points (e.g., 2.5 deg lon, 2.5 deg lat)
       //var Δλ = 0.00005, Δφ = 0.00005;
       var ni = header.nx, nj = header.ny;    // number of grid points W-E and N-S (e.g., 144 x 73)

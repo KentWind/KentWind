@@ -53,34 +53,34 @@ const SENSOR_OFFSET = .0005;
 const MAX_CARDINALS = SENSOR_CARDINALS.length; // Number of cardinal directions.
 const MAX_SENSORS = ( 30 * MAX_CARDINALS ) - 1; // ( 30 sensors * n cardinal directions ) - Danny's sensor.
 
-// function generateSensors() {
-//     var idIter = 1;
-//     for (var i = 0; i < SENSOR_INFO.length; ++i) { // Loop through the sensors in the middle of the building.
-//         for (var j = 0; j < MAX_CARDINALS; ++j) { // Loop to create a sensor in each direction.
-//             var sensor = {};
-//             sensor.SensorID = idIter; // Sensor 0 is reserved for Daniel
-//             sensor.Location = SENSOR_INFO[i]['location'] + ' ' + SENSOR_CARDINALS[j];
-//             if (SENSOR_CARDINALS[j] == 'NE' || SENSOR_CARDINALS[j] == 'NW') { // If latitude is towards the north, it is closer to +90.
-//                 sensor.Latitude = SENSOR_INFO[i]['latitude'] + SENSOR_OFFSET;
-//             }
-//             else {
-//                 sensor.Latitude = SENSOR_INFO[i]['latitude'] - SENSOR_OFFSET; // Else, heading towards -90.
-//             }
-//             if (SENSOR_CARDINALS[j] == 'NE' || SENSOR_CARDINALS[j] == 'SE') { // If the longitude is towards the east, heading towards +180.
-//                 sensor.Longitude = SENSOR_INFO[i]['longitude'] + SENSOR_OFFSET;
-//             }
-//             else {
-//                 sensor.Longitude = SENSOR_INFO[i]['longitude'] - SENSOR_OFFSET; // Else, heading towards -180.
-//             }
-//             $.ajax({
-//                 url: 'php/utilities/sensorPush.php',
-//                 type: 'POST',
-//                 aysnc: false,
-//                 data: {
-//                     data: sensor
-//                 }
-//             });
-//             ++idIter;
-//         }
-//     }
-// }
+function generateSensors() {
+    var idIter = 1;
+    for (var i = 0; i < SENSOR_INFO.length; ++i) { // Loop through the sensors in the middle of the building.
+        for (var j = 0; j < MAX_CARDINALS; ++j) { // Loop to create a sensor in each direction.
+            var sensor = {};
+            sensor.SensorID = idIter; // Sensor 0 is reserved for Daniel
+            sensor.Location = SENSOR_INFO[i]['location'] + ' ' + SENSOR_CARDINALS[j];
+            if (SENSOR_CARDINALS[j] == 'NE' || SENSOR_CARDINALS[j] == 'NW') { // If latitude is towards the north, it is closer to +90.
+                sensor.Latitude = SENSOR_INFO[i]['latitude'] + SENSOR_OFFSET;
+            }
+            else {
+                sensor.Latitude = SENSOR_INFO[i]['latitude'] - SENSOR_OFFSET; // Else, heading towards -90.
+            }
+            if (SENSOR_CARDINALS[j] == 'NE' || SENSOR_CARDINALS[j] == 'SE') { // If the longitude is towards the east, heading towards +180.
+                sensor.Longitude = SENSOR_INFO[i]['longitude'] + SENSOR_OFFSET;
+            }
+            else {
+                sensor.Longitude = SENSOR_INFO[i]['longitude'] - SENSOR_OFFSET; // Else, heading towards -180.
+            }
+            $.ajax({
+                url: '../php/utilities/sensorPush.php',
+                type: 'POST',
+                aysnc: false,
+                data: {
+                    data: sensor
+                }
+            });
+            ++idIter;
+        }
+    }
+}

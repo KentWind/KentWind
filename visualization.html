@@ -151,7 +151,9 @@
           //the map is in web mercator but display coordinates in geographic (lat, long)
           var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
           //display mouse coordinates
-          dom.byId("info").innerHTML = mp.y.toFixed(5) + ", " + mp.x.toFixed(5);
+          var lat = mp.y.toFixed(5);
+          var lon = 360 + parseFloat(mp.x.toFixed(5));
+          dom.byId("info").innerHTML = lat + ", " + lon;
         }
         function logCoordinates(evt){
           var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
@@ -199,7 +201,14 @@
               map.addLayer(rasterLayer);
 
               generateData();
-              var dbData = pullData();
+              // var dbData = pullData();
+              var dbData = [{
+                              Direction:0,
+                              Latitude:41.15,
+                              Longitude:-81.34,
+                              SensorID:1,
+                              Speed:30
+                            }];
               convertData(dbData);
 
               windy = new Windy({ canvas: rasterLayer._element, data: gfs }, CURRENTID);
