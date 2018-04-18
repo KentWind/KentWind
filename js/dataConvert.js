@@ -100,7 +100,6 @@ function convertData(dbData) {
     // console.log(lonDistanceFromLeft + " / " + LON_LENGTH + " = " + lonDistanceFromLeft / LON_LENGTH);
     // console.log((lonDistanceFromLeft / LON_LENGTH) + " * " + GRID_X + " = " + (lonDistanceFromLeft / LON_LENGTH) * GRID_Y);
     // console.log(Math.floor((lonDistanceFromLeft / LON_LENGTH) * GRID_X));
-    console.log(jIndex + " / " + GRID_X);
 
     var yDirection = data[i].yComp;
     var xDirection = data[i].xComp;
