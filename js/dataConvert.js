@@ -41,8 +41,8 @@ function convertData(dbData) {
   LON_LENGTH = MAX_LON - MIN_LON;    // Longitudinal width of sensor data
   LAT_HEIGHT = MAX_LAT - MIN_LAT;    // Latitudinal height of sensor data
 
-  GRID_X = 40;              // Width of the grid after conversion from lat/lon coordinates to 2D array indexes (j value)
-  GRID_Y = 40;              // Height of the grid after conversion from lat/lon coordinates to 2D array indexes (i value)
+  GRID_X = 25;              // Width of the grid after conversion from lat/lon coordinates to 2D array indexes (j value)
+  GRID_Y = 25;              // Height of the grid after conversion from lat/lon coordinates to 2D array indexes (i value)
   GRID_SPACING_X = LON_LENGTH / GRID_X;  // lat/lon distance between each grid point
   GRID_SPACING_Y = LAT_HEIGHT / GRID_Y;  // lat/lon distance between each grid point
 
@@ -74,6 +74,7 @@ function convertData(dbData) {
     data[i].lon = 360 + parseFloat(dbData[i].Longitude);
     data[i].xComp = components.u;
     data[i].yComp = components.v;
+    data[i].direction = parseFloat(dbData[i].Direction);
   }
 
   var YComponentGrid = [];
@@ -100,7 +101,7 @@ function convertData(dbData) {
     // console.log(lonDistanceFromLeft + " / " + LON_LENGTH + " = " + lonDistanceFromLeft / LON_LENGTH);
     // console.log((lonDistanceFromLeft / LON_LENGTH) + " * " + GRID_X + " = " + (lonDistanceFromLeft / LON_LENGTH) * GRID_Y);
     // console.log(Math.floor((lonDistanceFromLeft / LON_LENGTH) * GRID_X));
-    console.log(jIndex + " / " + GRID_X);
+    // console.log(jIndex + " / " + GRID_X);
 
     var yDirection = data[i].yComp;
     var xDirection = data[i].xComp;
@@ -110,57 +111,105 @@ function convertData(dbData) {
   }
 
   // wind prediction data extender; extends current wind data to fill in blank spaces of data
-  // for(var i = 0; i < data.length; i++) {
-    // var iIndex = Math.floor(((MAX_LAT - data[i].lat) / LAT_HEIGHT) * GRID_Y);
-    // var jIndex = Math.floor(((data[i].lon - MIN_LON) / LON_LENGTH) * GRID_X);
-    //
-    // var yDirection = data[i].yComp;
-    // var xDirection = data[i].xComp;
-    //
-    // var angle = Math.atan((yDirection + .001) / (xDirection + .001)) * (180 / Math.PI);
-    // negAngle = angle;
-    // angle = Math.abs(angle);
-    //
-    // if (angle > -22.5 && angle < 22.5) {
-    //   if (iIndex < GRID_X) {
-    //     if(YComponentGrid[jIndex][iIndex + 1] == 0) YComponentGrid[jIndex][iIndex + 1] = yDirection * .75;
-    //     if(XComponentGrid[jIndex][iIndex + 1] == 0)XComponentGrid[jIndex][iIndex + 1] = xDirection * .75;
-    //   }
-    //   if (iIndex > 0) {
-    //     if(YComponentGrid[jIndex][iIndex - 1] == 0) YComponentGrid[jIndex][iIndex - 1] = yDirection * .75;
-    //     if(XComponentGrid[jIndex][iIndex - 1] == 0) XComponentGrid[jIndex][iIndex - 1] = xDirection * .75;
-    //   }
-    // }
-    // if (angle > 22.5 && angle < 67.5) {
-    //   if (iIndex < GRID_X && jIndex < GRID_Y) {
-    //     if(YComponentGrid[jIndex + 1][iIndex + 1] == 0) YComponentGrid[jIndex + 1][iIndex + 1] = yDirection * .75;
-    //     if(XComponentGrid[jIndex + 1][iIndex + 1] == 0) XComponentGrid[jIndex + 1][iIndex + 1] = xDirection * .75;
-    //   }
-    //   if (iIndex > 0 && jIndex > 0) {
-    //     if(YComponentGrid[jIndex - 1][iIndex - 1] == 0) YComponentGrid[jIndex - 1][iIndex - 1] = yDirection * .75;
-    //     if(XComponentGrid[jIndex - 1][iIndex - 1] == 0) XComponentGrid[jIndex - 1][iIndex - 1] = xDirection * .75;
-    //   }
-    // }
-    // if (angle > 67.5 && angle < 90) {
-    //   if (jIndex < GRID_Y) {
-    //     if(YComponentGrid[jIndex + 1][iIndex] == 0) YComponentGrid[jIndex + 1][iIndex] = yDirection * .75;
-    //     if(XComponentGrid[jIndex + 1][iIndex] == 0) XComponentGrid[jIndex + 1][iIndex] = xDirection * .75;
-    //   }
-    //   if (jIndex > 0) {
-    //     if(YComponentGrid[jIndex - 1][iIndex] == 0) YComponentGrid[jIndex - 1][iIndex] = yDirection * .75;
-    //     if(XComponentGrid[jIndex - 1][iIndex] == 0) XComponentGrid[jIndex - 1][iIndex] = xDirection * .75;
-    //   }
-    // }
-    // if (negAngle < -22.5 && negAngle > -67.5) {
-    //   if (iIndex < GRID_X && jIndex > 0) {
-    //     if(YComponentGrid[jIndex - 1][iIndex + 1] == 0) YComponentGrid[jIndex - 1][iIndex + 1] = yDirection * .75;
-    //     if(XComponentGrid[jIndex - 1][iIndex + 1] == 0) XComponentGrid[jIndex - 1][iIndex + 1] = xDirection * .75;
-    //   }
-    //   if (iIndex > 0 && jIndex < GRID_Y) {
-    //     if(YComponentGrid[jIndex + 1][iIndex - 1] == 0) YComponentGrid[jIndex + 1][iIndex - 1] = yDirection * .75;
-    //     if(XComponentGrid[jIndex + 1][iIndex - 1] == 0) XComponentGrid[jIndex + 1][iIndex - 1] = xDirection * .75;
-    //   }
-    // }
+  for(var i = 0; i < data.length; i++) {
+    var iIndex = Math.floor(((MAX_LAT - data[i].lat) / LAT_HEIGHT) * GRID_Y);
+    var jIndex = Math.floor(((data[i].lon - MIN_LON) / LON_LENGTH) * GRID_X);
+
+    var yDirection = data[i].yComp;
+    var xDirection = data[i].xComp;
+
+    var fadeValue = .75;
+
+    var angle = data[i].direction;
+    if(angle > 7){
+      angle = Math.abs(angle) - 8;
+    } else {
+      angle = Math.abs(angle);
+    }
+    for(j = 1; j < 7; j++) {
+      if (angle == 4) {
+        if (jIndex <= (GRID_X - j)) {
+          if(YComponentGrid[iIndex][jIndex + j] == 0) YComponentGrid[iIndex][jIndex + j] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex][jIndex + j] == 0) XComponentGrid[iIndex][jIndex + j] = (xDirection * fadeValue) / j;
+        }
+        if (jIndex >= j) {
+          if(YComponentGrid[iIndex][jIndex - j] == 0) YComponentGrid[iIndex][jIndex - j] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex][jIndex - j] == 0) XComponentGrid[iIndex][jIndex - j] = (xDirection * fadeValue) / j;
+        }
+      }
+      if (angle == 0) {
+        if (iIndex <= (GRID_Y - j)) {
+          if(YComponentGrid[iIndex + j][jIndex] == 0) YComponentGrid[iIndex + j][jIndex] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex + j][jIndex] == 0) XComponentGrid[iIndex + j][jIndex] = (xDirection * fadeValue) / j;
+        }
+        if (iIndex >= j) {
+          if(YComponentGrid[iIndex - j][jIndex] == 0) YComponentGrid[iIndex - j][jIndex] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex - j][jIndex] == 0) XComponentGrid[iIndex - j][jIndex] = (xDirection * fadeValue) / j;
+        }
+      }
+      // if (angle >= 1 && angle <= 3) {
+      if (angle == 2) {
+        if (jIndex >= j && iIndex < GRID_Y) {
+          if(YComponentGrid[iIndex + j][jIndex - j] == 0) YComponentGrid[iIndex + j][jIndex - j] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex + j][jIndex - j] == 0) XComponentGrid[iIndex + j][jIndex - j] = (xDirection * fadeValue) / j;
+        }
+        if (jIndex <= (GRID_X - j) && iIndex >= j ) {
+          if(YComponentGrid[iIndex - j][jIndex + j] == 0) YComponentGrid[iIndex - j][jIndex + j] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex - j][jIndex + j] == 0) XComponentGrid[iIndex - j][jIndex + j] = (xDirection * fadeValue) / j;
+        }
+      }
+      if (angle == 1) {
+        if (jIndex >= j && iIndex < GRID_Y) {
+          if(YComponentGrid[iIndex + j][jIndex - Math.floor(j / 2)] == 0) YComponentGrid[iIndex + j][jIndex - Math.floor(j / 2)] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex + j][jIndex - Math.floor(j / 2)] == 0) XComponentGrid[iIndex + j][jIndex - Math.floor(j / 2)] = (xDirection * fadeValue) / j;
+        }
+        if (jIndex <= (GRID_X - j) && iIndex >= j ) {
+          if(YComponentGrid[iIndex - j][jIndex + Math.floor(j / 2)] == 0) YComponentGrid[iIndex - j][jIndex + Math.floor(j / 2)] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex - j][jIndex + Math.floor(j / 2)] == 0) XComponentGrid[iIndex - j][jIndex + Math.floor(j / 2)] = (xDirection * fadeValue) / j;
+        }
+      }
+      if (angle == 3) {
+        if (jIndex >= j && iIndex < GRID_Y) {
+          if(YComponentGrid[iIndex + Math.floor(j / 2)][jIndex - j] == 0) YComponentGrid[iIndex + Math.floor(j / 2)][jIndex - j] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex + Math.floor(j / 2)][jIndex - j] == 0) XComponentGrid[iIndex + Math.floor(j / 2)][jIndex - j] = (xDirection * fadeValue) / j;
+        }
+        if (jIndex <= (GRID_X - j) && iIndex >= j ) {
+          if(YComponentGrid[iIndex - Math.floor(j / 2)][jIndex + j] == 0) YComponentGrid[iIndex - Math.floor(j / 2)][jIndex + j] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex - Math.floor(j / 2)][jIndex + j] == 0) XComponentGrid[iIndex - Math.floor(j / 2)][jIndex + j] = (xDirection * fadeValue) / j;
+        }
+      }
+      if (angle == 7) {
+        if (jIndex <= (GRID_X - j) && iIndex <= (GRID_Y - j)) {
+          if(YComponentGrid[iIndex + j][jIndex + Math.floor(j / 2)] == 0) YComponentGrid[iIndex + j][jIndex + Math.floor(j / 2)] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex + j][jIndex + Math.floor(j / 2)] == 0) XComponentGrid[iIndex + j][jIndex + Math.floor(j / 2)] = (xDirection * fadeValue) / j;
+        }
+        if (jIndex >= j && iIndex >= j) {
+          if(YComponentGrid[iIndex - j][jIndex - Math.floor(j / 2)] == 0) YComponentGrid[iIndex - j][jIndex - Math.floor(j / 2)] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex - j][jIndex - Math.floor(j / 2)] == 0) XComponentGrid[iIndex - j][jIndex - Math.floor(j / 2)] = (xDirection * fadeValue) / j;
+        }
+      }
+      if (angle == 5) {
+        if (jIndex <= (GRID_X - j) && iIndex <= (GRID_Y - j)) {
+          if(YComponentGrid[iIndex + Math.floor(j / 2)][jIndex + j] == 0) YComponentGrid[iIndex + Math.floor(j / 2)][jIndex + j] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex + Math.floor(j / 2)][jIndex + j] == 0) XComponentGrid[iIndex + Math.floor(j / 2)][jIndex + j] = (xDirection * fadeValue) / j;
+        }
+        if (jIndex >= j && iIndex >= j) {
+          if(YComponentGrid[iIndex - Math.floor(j / 2)][jIndex - j] == 0) YComponentGrid[iIndex - Math.floor(j / 2)][jIndex - j] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex - Math.floor(j / 2)][jIndex - j] == 0) XComponentGrid[iIndex - Math.floor(j / 2)][jIndex - j] = (xDirection * fadeValue) / j;
+        }
+      }
+      if (angle == 6) {
+        if (jIndex <= (GRID_X - j) && iIndex <= (GRID_Y - j)) {
+          if(YComponentGrid[iIndex + j][jIndex + j] == 0) YComponentGrid[iIndex + j][jIndex + j] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex + j][jIndex + j] == 0) XComponentGrid[iIndex + j][jIndex + j] = (xDirection * fadeValue) / j;
+        }
+        if (jIndex >= j && iIndex >= j) {
+          if(YComponentGrid[iIndex - j][jIndex - j] == 0) YComponentGrid[iIndex - j][jIndex - j] = (yDirection * fadeValue) / j;
+          if(XComponentGrid[iIndex - j][jIndex - j] == 0) XComponentGrid[iIndex - j][jIndex - j] = (xDirection * fadeValue) / j;
+        }
+      }
+    }
+  }
 
 
   var YComps = [];
@@ -172,13 +221,13 @@ function convertData(dbData) {
       XComps = XComps.concat(XComponentGrid[i]);
   }
 
-  gfs[0].data = YComps;
-  gfs[1].data = XComps;
+  gfs[0].data = XComps;
+  gfs[1].data = YComps;
 }
 
 function vectorToComponents(speed, direction) {
-  var theta = (-1 * ( (direction / 16) * 2 * Math.PI) );
-  //(-1 * (direction / 16) * 2 * Math.PI)) + (Math.PI / 2));
+  //var theta = (-1 * ( (direction / 16) * 2 * Math.PI) );
+  var theta = (-1 * (direction / 16) * 2 * Math.PI) + (Math.PI / 2);
   var v = speed * Math.sin(theta);
   var u = speed * Math.cos(theta);
   return {u, v};

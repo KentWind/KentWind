@@ -14,13 +14,14 @@ var CURRENTID = 0;
 
 var Windy = function( params, current_ID ){
 
-  var VELOCITY_SCALE = 0.000002;             // scale for wind velocity (completely arbitrary--this value looks nice)
+  var ZOOMLEVEL = 16;
+  var VELOCITY_SCALE = 0.0000015;             // scale for wind velocity (completely arbitrary--this value looks nice)
   var INTENSITY_SCALE_STEP = 10;            // step size of particle intensity color scale
-  var MAX_WIND_INTENSITY = 20;              // wind velocity at which particle intensity is maximum (m/s)
+  var MAX_WIND_INTENSITY = 35;              // wind velocity at which particle intensity is maximum (m/s)
   var MAX_PARTICLE_AGE = 75;                // max number of frames a particle is drawn before regeneration
   var PARTICLE_LINE_WIDTH = 1.5;              // line width of a drawn particle
-  var PARTICLE_MULTIPLIER = 1/75;              // particle count scalar (completely arbitrary--this values looks nice)
-  var PARTICLE_REDUCTION = 0.75;            // reduce particle count to this much of normal for mobile devices
+  var PARTICLE_MULTIPLIER = 1/150;              // particle count scalar (completely arbitrary--this values looks nice)
+  var PARTICLE_REDUCTION = 1;            // reduce particle count to this much of normal for mobile devices
   var FRAME_RATE = 50;                      // desired milliseconds per frame
   var BOUNDARY = 0.45;
   var ID = -1;
@@ -455,10 +456,8 @@ var Windy = function( params, current_ID ){
     buckets = colorStyles.map(function() { return []; });
 
 
-    var particleCount = Math.round(bounds.width * bounds.height * PARTICLE_MULTIPLIER * .5);
-    if (isMobile()) {
-      particleCount *= PARTICLE_REDUCTION;
-    }
+    var particleCount = Math.round(bounds.width * bounds.height * PARTICLE_MULTIPLIER * PARTICLE_REDUCTION);
+
 
     var fadeFillStyle = "rgba(0, 0, 0, 0.9)";
 
@@ -551,8 +550,10 @@ var Windy = function( params, current_ID ){
   }
 
 
-  var start = function( bounds, width, height, extent ){
+  var start = function( bounds, width, height, extent, zoom ){
     setID(current_ID);
+
+    ZOOMLEVEL = zoom;
 
     var mapBounds = {
       south: deg2rad(extent[0][1]),

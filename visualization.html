@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -169,14 +168,16 @@
             //windy.modifyColors(Math.floor(Math.random() * 176), Math.floor(Math.random() * 176), Math.floor(Math.random() * 176) , 1);
           });
           document.getElementById("randomize").addEventListener("click", function(){
-            //windy.stopEvolve();
+            windy.stopEvolve();
             windy.newInfoAvailable();
-            //map.removeLayer(rasterLayer);
-            //windy.stop();
+            map.removeLayer(rasterLayer);
+            windy.stop();
             //console.log("Button clicked");
             ++CURRENTID;
             refreshData();
           });
+
+
           function refreshData(){
             if ( canvasSupport ) {
               if ( typeof rasterLayer !== 'undefined' ) {
@@ -190,7 +191,7 @@
                 oldWindy = windy;
                 function clearOldLayer() {
                   oldWindy.stopEvolve();
-                  //oldWindy.newInfoAvailable();
+                  oldWindy.newInfoAvailable();
                   oldWindy.stop();
                   map.removeLayer(oldLayer);
                   clearInterval(clearFuncVar);
@@ -200,16 +201,18 @@
               }
               map.addLayer(rasterLayer);
 
-              generateData();
+              console.log(map.getZoom());
+              //generateData();
               var dbData = pullData();
               // var dbData = [{
-              //                 Direction:0,
-              //                 Latitude:41.15,
-              //                 Longitude:-81.34,
+              //                 Direction:7,
+              //                 Latitude:41.14689,
+              //                 Longitude:-81.34567,
               //                 SensorID:1,
               //                 Speed:30
               //               }];
               convertData(dbData);
+              console.log(gfs);
 
               windy = new Windy({ canvas: rasterLayer._element, data: gfs }, CURRENTID);
               redraw();
@@ -219,7 +222,7 @@
             }
           }
           refreshData();
-          setInterval(refreshData, 15000);
+          setInterval(refreshData, 3000);
 
           map.on("extent-change", redraw);
           map.on("resize", function(){});
@@ -252,7 +255,8 @@
               [[0,0],[map.width, map.height]],
               map.width,
               map.height,
-              [[extent.xmin, extent.ymin],[extent.xmax, extent.ymax]]
+              [[extent.xmin, extent.ymin],[extent.xmax, extent.ymax]],
+              map.getZoom()
             );
           },0);
         }
