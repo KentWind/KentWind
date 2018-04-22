@@ -202,7 +202,7 @@
               map.addLayer(rasterLayer);
 
               console.log(map.getZoom());
-              //generateData();
+              generateData();
               var dbData = pullData();
               // var dbData = [{
               //                 Direction:7,
@@ -222,7 +222,7 @@
             }
           }
           refreshData();
-          setInterval(refreshData, 3000);
+          setInterval(refreshData, 15000);
 
           map.on("extent-change", redraw);
           map.on("resize", function(){});
