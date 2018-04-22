@@ -7,7 +7,6 @@ function generateData() {
         $.ajax({
             url: 'php/utilities/serverPush.php',
             type: 'POST',
-            async: false,
             data: {
                 data: tableEntry
             }
@@ -35,7 +34,7 @@ const SENSOR_INFO = [
     { location: "CENTER FOR SCHOLASTIC JOURNALISM", latitude: 41.149509, longitude: -81.351326 },
     { location: "HILLEL AT KENT STATE", latitude: 41.149676, longitude: -81.349406 },
     { location: "BUSINESS ADMINISTRATION", latitude: 41.149132, longitude: -81.347268 },
-    { location: "SCHWARTZ CENTER", latitude: 41.147173, longitude: -81.356613 },
+    { location: "SCHWARTZ CENTER", latitude: 41.14712, longitude: -81.34788 },
     { location: "THE QUAD", latitude: 41.146587, longitude: -81.345219 },
     { location: "KIVA AUDITORIUM", latitude: 41.145042, longitude: -81.343073 },
     { location: "KSU LIBRARY", latitude: 41.145042, longitude: -81.343073 },
