@@ -32,6 +32,7 @@ var Windy = function( params, current_ID ){
   var BASE_GREEN = 100;
   var BASE_BLUE = 0;
   var BASE_ALPHA = 1;
+  var ALPHA_REDUCTION = 0;
   //var BASE_COLOR = 100;
  // ADDED BY US
 
@@ -591,6 +592,25 @@ var Windy = function( params, current_ID ){
     if (windy.timer) clearTimeout(windy.timer)
   };
 
+  var fadeOut = function() {
+      
+    function fadeOnce() {
+    	//oldWindy.stopEvolve();
+    	//oldWindy.newInfoAvailable();
+    	//oldWindy.stop();
+    	//map.removeLayer(oldLayer);
+        ALPHA_REDUCTION += .05;
+        if ( BASE_ALPHA - ALPHA_REDUCTION > 0 ) {
+            modifyColors( BASE_RED, BASE_GREEN, BASE_BLUE, BASE_ALPHA - ALPHA_REDUCTION );
+        } else {
+            modifyColors( 0, 0, 0, 0 );
+            clearInterval( fadeFuncVar );
+        }
+    }
+    
+    fadeFunVar = setInterval(fadeOnce, 100);
+
+  };
 
   var windy = {
     params: params,
@@ -599,7 +619,8 @@ var Windy = function( params, current_ID ){
     stopEvolve: stopEvolve,
     newInfoAvailable: newInfoAvailable,
     modifyColors: modifyColors,
-    multiColor: multiColor
+    multiColor: multiColor,
+    fadeOut: fadeOut
   };
 
   // shim layer with setTimeout fallback
