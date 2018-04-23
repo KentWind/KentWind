@@ -1,94 +1,23 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Wind Animation</title>
 
 	<!-- jquery -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <!--ORIGINAL CSS <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css"> -->
     <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/dijit/calcite.css">
     <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/esri/esri.css">
-    <link rel="stylesheet" href="css/myStyle.css">
-    <style>
-      html,body {
-        width:100%;
-        height:100%;
-        margin: 0;
-        padding: 0px 0 0 0;
-      }
-      #HomeButton {
-        position: absolute;
-        top: 140px;
-        left: 15px;
-        z-index: 50;
-      }
-      #BasemapToggle {
-        position: absolute;
-        top: 75px;
-        right: 20px;
-        z-index: 50;
-      }
-      .basemapToggle {
-        width: 50px;
-        height: 50px;
-      }
-      .BasemapToggle .basemapTitle {
-        width: 100%;
-        background: #333333;
-        color: #cccccc;
-      }
-      .BasemapToggle .toggleButton {
-        background: #333333;
-      }
-      .esriSimpleSlider {
-        background-color: #333333;
-        color: white;
-      }
-      #mapCanvas {
-        padding:0;
-      }
-	  #slider-container
-	  {
-		float: right;
-		width: 50%;
-		color: white;
-	  }
-	  #slider
-	  {
-		direction: rtl;
-	  }
-	  .colorSlider
-	  {
-		width: 40% !important;
-	  }
-	  .averageSlider
-	  {
-		width: 40% !important;
-	  }
-	  #filtersModal .modal-content
-	  {
-		background-color: rgba(0, 0, 0, 0.5);
-		color: white;
-	  }
-	  #colorBox
-	  {
-		background-color: rgba(0, 0, 0, 0);
-		height: 20px;
-		width: 20px;
-		border: 1px solid white;
-	  }
-    </style>
 
-    <script>
-      var dojoConfig = {
-        paths: {
-          plugins: location.pathname.replace(/\/[^/]+$/, "") + "/plugins"
-        }
-      };
-    </script>
+    <link rel="stylesheet" href="css/visualizationStyle.css">
+    <link rel="stylesheet" href="css/capstoneStyle.css">
+
+    <!-- Path utility file provides pathing manipulation for certain files. -->
+    <script src="js/pathUtility.js"></script>
+
     <script src="js/dataConvert.js"></script>
     <script src="js/windy.js"></script>
     <script src="js/generator.js"></script>
@@ -96,294 +25,206 @@
 
     <script src="https://js.arcgis.com/3.20compact/"></script>
     <script>
+
+    ////////////////////////////////////////////////////////
+    //
+    // Map/canvas initialization.
+    //
+
     var CURRENTID = 0;
-	var windy;
-      var map, rasterLayer;
-      var canvasSupport;
-      require([
-        "esri/map", "esri/Color", "esri/symbols/SimpleMarkerSymbol",
-	"esri/symbols/SimpleLineSymbol", "esri/geometry/Circle", "esri/symbols/SimpleFillSymbol",
-        "esri/graphic", "esri/layers/GraphicsLayer", "esri/dijit/BasemapToggle",
-        "esri/dijit/HomeButton", "esri/geometry/webMercatorUtils", "esri/layers/ArcGISTiledMapServiceLayer",
-        "esri/domUtils", "esri/request",
-        "dojo/parser", "dojo/number", "dojo/json", "dojo/dom",
-        "dijit/registry", "plugins/RasterLayer","esri/layers/WebTiledLayer",
-        "esri/config",
-        "dojo/domReady!"
-      ], function(
-        Map, Color, SimpleMarkerSymbol, SimpleLineSymbol, Circle, SimpleFillSymbol,
-        Graphic, GraphicsLayer, BasemapToggle, HomeButton, webMercatorUtils, ArcGISTiledMapServiceLayer,
-        domUtils, esriRequest,
-        parser, number, JSON, dom,
-        registry, RasterLayer, WebTiledLayer, esriConfig
-      ){
-        parser.parse();
-        // does the browser support canvas?
-        canvasSupport = supports_canvas();
-        map = new Map("mapCanvas", {
-          center: [-81.3425, 41.1480],
-          zoom: 16,
-          basemap: "dark-gray",
-          // streets-night-vector
-          // satellite
-          // streets
-          // osm
-          // hybrid
-          // dark-gray-vector
-          // dark-gray
-          // topo
-        });
+    var windy;
+    var map, rasterLayer;
+    var canvasSupport;
+    require([
+    		"esri/map", "esri/Color", "esri/symbols/SimpleMarkerSymbol",
+    		"esri/symbols/SimpleLineSymbol", "esri/geometry/Circle", "esri/symbols/SimpleFillSymbol",
+    		"esri/graphic", "esri/layers/GraphicsLayer", "esri/dijit/BasemapToggle",
+    		"esri/dijit/HomeButton", "esri/geometry/webMercatorUtils", "esri/layers/ArcGISTiledMapServiceLayer",
+    		"esri/domUtils", "esri/request",
+    		"dojo/parser", "dojo/number", "dojo/json", "dojo/dom",
+    		"dijit/registry", "plugins/RasterLayer", "esri/layers/WebTiledLayer",
+    		"esri/config",
+    		"dojo/domReady!"
+    	], function (
+    		Map, Color, SimpleMarkerSymbol, SimpleLineSymbol, Circle, SimpleFillSymbol,
+    		Graphic, GraphicsLayer, BasemapToggle, HomeButton, webMercatorUtils, ArcGISTiledMapServiceLayer,
+    		domUtils, esriRequest,
+    		parser, number, JSON, dom,
+    		registry, RasterLayer, WebTiledLayer, esriConfig) {
+    	parser.parse();
+    	// does the browser support canvas?
+    	canvasSupport = supports_canvas();
+    	map = new Map("mapCanvas", {
+    			center: [-81.3425, 41.1480],
+    			zoom: 16,
+    			basemap: "dark-gray",
+    			// streets-night-vector
+    			// satellite
+    			// streets
+    			// osm
+    			// hybrid
+    			// dark-gray-vector
+    			// dark-gray
+    			// topo
+    		});
 
-        var home = new HomeButton({
-          map: map
-        }, "HomeButton");
-        home.startup();
-        var toggle = new BasemapToggle({
-          map: map,
-          basemap: "satellite"
-        }, "BasemapToggle");
-        toggle.startup();
-        dojo.connect(map, "onMouseMove", showCoordinates);
-        dojo.connect(map, "onMouseDrag", showCoordinates);
-        dojo.connect(map, "onClick", logCoordinates);
-        function showCoordinates(evt) {
-          //the map is in web mercator but display coordinates in geographic (lat, long)
-          var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
-          //display mouse coordinates
-          var lat = mp.y.toFixed(5);
-          var lon = 360 + parseFloat(mp.x.toFixed(5));
-          dom.byId("info").innerHTML = lat + ", " + lon;
-        }
-        function logCoordinates(evt){
-          var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
-          console.log(mp.y.toFixed(5) + ", " + mp.x.toFixed(5));
+    	var home = new HomeButton({
+    			map: map
+    		}, "HomeButton");
 
-        }
-        map.on("load", mapLoaded);
-        function mapLoaded() {
-          document.getElementById("changeColor").addEventListener("click", function(){
-            //windy.newInfoAvailable();
-            //windy.modifyColors(0, 100, 0, 1);
-            //windy.modifyColors( randomInRange(0, 100), randomInRange(0, 100), randomInRange(0, 100), randomInRange(.5, 1) );
-            //windy.modifyColors(Math.floor(Math.random() * 176), Math.floor(Math.random() * 176), Math.floor(Math.random() * 176) , 1);
-          });
-          document.getElementById("randomize").addEventListener("click", function(){
-            windy.stopEvolve();
-            windy.newInfoAvailable();
-            map.removeLayer(rasterLayer);
-            windy.stop();
-            //console.log("Button clicked");
-            ++CURRENTID;
-            refreshData();
-          });
+    	home.startup();
 
+    	var toggle = new BasemapToggle({
+    			map: map,
+    			basemap: "satellite"
+    		}, "BasemapToggle");
 
-          function refreshData(){
-            if ( canvasSupport ) {
-              if ( typeof rasterLayer !== 'undefined' ) {
-                oldLayer = rasterLayer;
-              }
-              rasterLayer = new RasterLayer(null, {
-                opacity: 1
-              });
-              if ( typeof oldLayer !== 'undefined') {
-                var clearFuncVar;
-                oldWindy = windy;
-                oldWindy.newInfoAvailable();
-                function clearOldLayer() {
-                  oldWindy.stopEvolve();
-                  oldWindy.stop();
-                  map.removeLayer(oldLayer);
-                  clearInterval(clearFuncVar);
-                }
-                clearFuncVar = setTimeout(clearOldLayer, 2000);
-              }
-              map.addLayer(rasterLayer);
+    	toggle.startup();
 
-              generateData();
-              var dbData = pullData();
-              // var dbData = [{
-              //                 Direction: Math.floor(Math.random() * 15) + 1,
-              //                 Latitude:41.14689,
-              //                 Longitude:-81.34567,
-              //                 SensorID:1,
-              //                 Speed:30
-              //               },
-              //               {
-              //                 Direction:Math.floor(Math.random() * 15) + 1,
-              //                 Latitude:41.14689,
-              //                 Longitude:-81.34517,
-              //                 SensorID:1,
-              //                 Speed:100
-              //               }];
-              convertData(dbData);
+    	dojo.connect(map, "onMouseMove", showCoordinates);
+    	dojo.connect(map, "onMouseDrag", showCoordinates);
+    	dojo.connect(map, "onClick", logCoordinates);
 
-              windy = new Windy({ canvas: rasterLayer._element, data: gfs }, CURRENTID);
-              redraw();
+    	function showCoordinates(evt) {
+    		//the map is in web mercator but display coordinates in geographic (lat, long)
+    		var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
+    		//display mouse coordinates
+    		var lat = mp.y.toFixed(5);
+    		var lon = 360 + parseFloat(mp.x.toFixed(5));
+    		dom.byId("info").innerHTML = lat + ", " + lon;
+    	}
 
-            } else {
-              dom.byId("mapCanvas").innerHTML = "This browser doesn't support canvas. Visit <a target='_blank' href='http://www.caniuse.com/#search=canvas'>caniuse.com</a> for supported browsers";
-            }
-          }
-          refreshData();
-          setInterval(refreshData, 15000);
+    	function logCoordinates(evt) {
+    		var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
+    		console.log(mp.y.toFixed(5) + ", " + mp.x.toFixed(5));
 
-          map.on("extent-change", redraw);
-          map.on("resize", function(){});
-          map.on("zoom-start", redraw);
-          var symbol = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
+    	}
 
-          var gl = new GraphicsLayer({ id: "circles" });
-          map.addLayer(gl);
-          map.on("click", function(e) {
-            var radius = 2;
-            var circle = new Circle({
-              center: e.mapPoint,
-              radius: radius
-            });
-            var graphic = new Graphic(circle, symbol);
-            gl.add(graphic);
-          });
-        }
-        // does the browser support canvas?
-        function supports_canvas() {
-          return !!document.createElement("canvas").getContext;
-        }
-        function redraw(){
-          rasterLayer._element.width = map.width;
-          rasterLayer._element.height = map.height;
-          windy.stop();
-          var extent = map.geographicExtent;
-          setTimeout(function(){
-            windy.start(
-              [[0,0],[map.width, map.height]],
-              map.width,
-              map.height,
-              [[extent.xmin, extent.ymin],[extent.xmax, extent.ymax]],
-              map.getZoom()
-            );
-          },0);
-        }
-      });
+    	map.on("load", mapLoaded);
 
-	  $(function() {
-		  var sliderValue = $("#slider").val();
+    	function mapLoaded() {
 
-		  $("#sliderValue").html("<b style='color: red; text-decoration: underline;'>LIVE</b>");
+    		document.getElementById("changeColor").addEventListener("click", function () {
+    			//windy.newInfoAvailable();
+    			//windy.modifyColors(0, 100, 0, 1);
+    			//windy.modifyColors( randomInRange(0, 100), randomInRange(0, 100), randomInRange(0, 100), randomInRange(.5, 1) );
+    			//windy.modifyColors(Math.floor(Math.random() * 176), Math.floor(Math.random() * 176), Math.floor(Math.random() * 176) , 1);
+    		});
 
-		  $("#slider").on('change input', function() {
+    		document.getElementById("randomize").addEventListener("click", function () {
+    			windy.stopEvolve();
+    			windy.newInfoAvailable();
+    			map.removeLayer(rasterLayer);
+    			windy.stop();
+    			//console.log("Button clicked");
+    			++CURRENTID;
+    			refreshData();
+    		});
 
-		     sliderValue = $("#slider").val();
+    		function refreshData() {
+    			if (canvasSupport) {
 
-			 if (parseInt(sliderValue) == 0)
-			 {
-				$("#sliderValue").html("<b style='color: red; text-decoration: underline;'>LIVE</b>");
-			 }
-			 else
-			 {
-				var sliderDays = sliderValue / 60 / 60 / 24;
-				var sliderHours = sliderValue / 60 / 60;
-				var sliderMinutes = sliderValue / 60;
-				var sliderValueText = sliderDays + " day(s) ago | " + sliderHours + " hour(s) ago | " + sliderMinutes + " minute(s) ago";
-				$("#sliderValue").text(sliderValueText);
-			 }
-		  });
+    				if (typeof rasterLayer !== 'undefined') {
+    					oldLayer = rasterLayer;
+    				}
 
-		  $("input[class=colorSlider]").on('change input', function() {
-			changeColorBox();
-		  });
+    				rasterLayer = new RasterLayer(null, {
+    						opacity: 1
+    					});
+    				if (typeof oldLayer !== 'undefined') {
+    					var clearFuncVar;
+    					oldWindy = windy;
+                        oldWindy.fadeOut();
 
-		  var today = new Date();
-		  var todayString = today.getMonth() + 1 + "/" + today.getDate() + "/" + today.getFullYear();
-		  $("#endDaysSliderValue").text("0 days ago - Date: " + todayString);
-		  $("#fromDaysSliderValue").text("0 days ago - Date: " + todayString);
+    					function clearOldLayer() {
+    						oldWindy.stopEvolve();
+    						oldWindy.newInfoAvailable();
+    						oldWindy.stop();
+    						map.removeLayer(oldLayer);
+    						clearInterval(clearFuncVar);
+    					}
+    					clearFuncVar = setInterval(clearOldLayer, 5000);
+    					//map.removeLayer(oldLayer);
+    				}
+    				map.addLayer(rasterLayer);
 
-		  $("#fromDaysSlider").on('change input', function() {
-			changeFromDaysSlider();
-			updateEndDaysSliderText();
-		  });
+    				console.log(map.getZoom());
+    				generateData();
+    				var dbData = pullData();
+    				// var dbData = [{
+    				//                 Direction:7,
+    				//                 Latitude:41.14689,
+    				//                 Longitude:-81.34567,
+    				//                 SensorID:1,
+    				//                 Speed:30
+    				//               }];
+    				convertData(dbData);
+    				console.log(gfs);
 
-		  $("#endDaysSlider").on('change input', function() {
-			changeEndDaysSlider();
-			updateFromDaysSliderText();
-		  });
+    				windy = new Windy({
+    						canvas: rasterLayer._element,
+    						data: gfs
+    					}, CURRENTID);
+    				redraw();
 
-		  $("#MapTypeOption").change(function () {
-			if ($('input[name=maptype]:checked', '#MapTypeOption').val() == "Average")
-			{
-				$("#averageFilters").removeClass("hidden");
-			}
-			else
-			{
-				$("#averageFilters").addClass("hidden");
-			}
-		  });
+    			} else {
+    				dom.byId("mapCanvas").innerHTML = "This browser doesn't support canvas. Visit <a target='_blank' href='http://www.caniuse.com/#search=canvas'>caniuse.com</a> for supported browsers";
+    			}
+    		}
 
-		  function changeFromDaysSlider()
-		  {
-			updateFromDaysSliderText();
+    		refreshData();
+    		setInterval(refreshData, 15000);
 
-			if(parseInt($("#endDaysSlider").val()) < parseInt($("#fromDaysSlider").val()))
-			{
-				$("#endDaysSlider").val($("#fromDaysSlider").val());
-			}
-		  }
+    		map.on("extent-change", redraw);
+    		map.on("resize", function () {});
+    		map.on("zoom-start", redraw);
+    		var symbol = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
 
-		  function changeEndDaysSlider()
-		  {
-			updateEndDaysSliderText();
+    		var gl = new GraphicsLayer({
+    				id: "circles"
+    			});
+    		map.addLayer(gl);
+    		map.on("click", function (e) {
+    			var radius = 2;
+    			var circle = new Circle({
+    					center: e.mapPoint,
+    					radius: radius
+    				});
+    			var graphic = new Graphic(circle, symbol);
+    			gl.add(graphic);
+    		});
+    	}
 
-			if(parseInt($("#endDaysSlider").val()) < parseInt($("#fromDaysSlider").val()))
-			{
-				$("#fromDaysSlider").val($("#endDaysSlider").val());
-			}
-		  }
+    	// does the browser support canvas?
+    	function supports_canvas() {
+    		return !!document.createElement("canvas").getContext;
+    	}
 
-		  function updateFromDaysSliderText()
-		  {
-			var days = $("#fromDaysSlider").val();
-			var date = new Date(new Date().setDate(today.getDate()-days));
-			var dateString = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
-
-			$("#fromDaysSliderValue").text(days + " days ago - Date: " + dateString);
-		  }
-
-		  function updateEndDaysSliderText()
-		  {
-			var days = $("#endDaysSlider").val();
-			var date = new Date(new Date().setDate(today.getDate()-days));
-			var dateString = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
-
-			$("#endDaysSliderValue").text(days + " days ago - Date: " + dateString);
-		  }
-
-		  function changeColorBox()
-		  {
-			var R = parseInt($("#RGBA-RSlider").val());
-			var G = parseInt($("#RGBA-GSlider").val());
-			var B = parseInt($("#RGBA-BSlider").val());
-			var A = parseInt($("#RGBA-ASlider").val());
-
-			$("colorBox").css("background-color: rgba(" + R + ", " + G + ", " + B + ", " + A + ");");
-		  }
-
-		  $("#applyFilters").click(function() {
-			var R = parseInt($("#RGBA-RSlider").val());
-			var G = parseInt($("#RGBA-GSlider").val());
-			var B = parseInt($("#RGBA-BSlider").val());
-			var A = parseInt($("#RGBA-RSlider").val());
-
-			windy.modifyColors(R, G, B, A);
-		  });
-
-	});
+    	function redraw() {
+    		rasterLayer._element.width = map.width;
+    		rasterLayer._element.height = map.height;
+    		windy.stop();
+    		var extent = map.geographicExtent;
+    		setTimeout(function () {
+    			windy.start(
+    				[[0, 0], [map.width, map.height]],
+    				map.width,
+    				map.height,
+    				[[extent.xmin, extent.ymin], [extent.xmax, extent.ymax]],
+    				map.getZoom());
+    		}, 0);
+    	}
+    });
     </script>
+
+    <!-- The utility file adds functionality to the UI objects. -->
+    <script src="js/uiUtilities.js"></script>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  </head>
+</head>
 
   <body class="calcite">
     <nav class="navbar navbar-inverse" style="margin-bottom: 0px;">
