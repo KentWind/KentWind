@@ -32,17 +32,22 @@ var gfs = [{
 
 function convertData(dbData) {
 
-  MIN_LON = 278.64181;      // Longitude coordinate for North West corner of sensor data
-  MAX_LAT = 41.153616;       // Latitude coordinate for North West corner of sensor data
+  // MIN_LON = 278.64181;      // Longitude coordinate for North West corner of CAMPUS
+  // MAX_LAT = 41.153616;      // Latitude coordinate for North West corner of CAMPUS
+  MIN_LON = 360 - 81.36198;    // Longitude coordinate for North West corner of EXTENDED CAMPUS (for better edge fading)
+  MAX_LAT = 41.15606;          // Latitude coordinate for North West corner of EXTENDED CAMPUS (for better edge fading)
 
-  MAX_LON = 278.666856;      // Longitude coordinate for South East corner of sensor data
-  MIN_LAT = 41.140062;       // Latitude coordinate for South East corner of sensor data
+
+  // MAX_LON = 278.666856;    // Longitude coordinate for South East corner of CAMPUS
+  // MIN_LAT = 41.140062;     // Latitude coordinate for South East corner of CAMPUS
+  MAX_LON = 278.67093;        // Longitude coordinate for South East corner of EXTENDED CAMPUS (for better edge fading)
+  MIN_LAT = 41.13953;         // Latitude coordinate for South East corner of EXTENDED CAMPUS (for better edge fading)
 
   LON_LENGTH = MAX_LON - MIN_LON;    // Longitudinal width of sensor data
   LAT_HEIGHT = MAX_LAT - MIN_LAT;    // Latitudinal height of sensor data
 
-  GRID_X = 25;              // Width of the grid after conversion from lat/lon coordinates to 2D array indexes (j value)
-  GRID_Y = 25;              // Height of the grid after conversion from lat/lon coordinates to 2D array indexes (i value)
+  GRID_X = 30;              // Width of the grid after conversion from lat/lon coordinates to 2D array indexes (j value)
+  GRID_Y = 30;              // Height of the grid after conversion from lat/lon coordinates to 2D array indexes (i value)
   GRID_SPACING_X = LON_LENGTH / GRID_X;  // lat/lon distance between each grid point
   GRID_SPACING_Y = LAT_HEIGHT / GRID_Y;  // lat/lon distance between each grid point
 
@@ -75,6 +80,8 @@ function convertData(dbData) {
     data[i].xComp = components.u;
     data[i].yComp = components.v;
     data[i].direction = parseFloat(dbData[i].Direction);
+    data[i].speed = parseFloat(dbData[i].Speed);
+
   }
 
   var YComponentGrid = [];
@@ -90,18 +97,14 @@ function convertData(dbData) {
     }
   }
 
+
+
   // place sensor data in correct grid location
   for(var i = 0; i < data.length; ++i) {
     //convert lat/lon to grid indexes
     var iIndex = Math.floor(((MAX_LAT - data[i].lat) / LAT_HEIGHT) * GRID_Y);
     var jIndex = Math.floor(((data[i].lon - MIN_LON) / LON_LENGTH) * GRID_X);
 
-    // var lonDistanceFromLeft = data[i].lon - MIN_LON;
-    // console.log(data[i].lon + " - " + MIN_LON + " = " + lonDistanceFromLeft);
-    // console.log(lonDistanceFromLeft + " / " + LON_LENGTH + " = " + lonDistanceFromLeft / LON_LENGTH);
-    // console.log((lonDistanceFromLeft / LON_LENGTH) + " * " + GRID_X + " = " + (lonDistanceFromLeft / LON_LENGTH) * GRID_Y);
-    // console.log(Math.floor((lonDistanceFromLeft / LON_LENGTH) * GRID_X));
-    // console.log(jIndex + " / " + GRID_X);
 
     var yDirection = data[i].yComp;
     var xDirection = data[i].xComp;
@@ -149,7 +152,7 @@ function convertData(dbData) {
       }
       // if (angle >= 1 && angle <= 3) {
       if (angle == 2) {
-        if (jIndex >= j && iIndex < GRID_Y) {
+        if (jIndex >= j && iIndex < GRID_Y - j) {
           if(YComponentGrid[iIndex + j][jIndex - j] == 0) YComponentGrid[iIndex + j][jIndex - j] = (yDirection * fadeValue) / j;
           if(XComponentGrid[iIndex + j][jIndex - j] == 0) XComponentGrid[iIndex + j][jIndex - j] = (xDirection * fadeValue) / j;
         }
@@ -159,7 +162,7 @@ function convertData(dbData) {
         }
       }
       if (angle == 1) {
-        if (jIndex >= j && iIndex < GRID_Y) {
+        if (jIndex >= j && iIndex < GRID_Y - j) {
           if(YComponentGrid[iIndex + j][jIndex - Math.floor(j / 2)] == 0) YComponentGrid[iIndex + j][jIndex - Math.floor(j / 2)] = (yDirection * fadeValue) / j;
           if(XComponentGrid[iIndex + j][jIndex - Math.floor(j / 2)] == 0) XComponentGrid[iIndex + j][jIndex - Math.floor(j / 2)] = (xDirection * fadeValue) / j;
         }
@@ -169,7 +172,7 @@ function convertData(dbData) {
         }
       }
       if (angle == 3) {
-        if (jIndex >= j && iIndex < GRID_Y) {
+        if (jIndex >= j && iIndex < GRID_Y - j) {
           if(YComponentGrid[iIndex + Math.floor(j / 2)][jIndex - j] == 0) YComponentGrid[iIndex + Math.floor(j / 2)][jIndex - j] = (yDirection * fadeValue) / j;
           if(XComponentGrid[iIndex + Math.floor(j / 2)][jIndex - j] == 0) XComponentGrid[iIndex + Math.floor(j / 2)][jIndex - j] = (xDirection * fadeValue) / j;
         }

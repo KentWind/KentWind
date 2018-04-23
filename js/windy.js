@@ -428,7 +428,6 @@ var Windy = function( params, current_ID ){
       color.r = Math.floor(startColor.r + (endColor.r - startColor.r) * (i/(endPosition - 1)));
       color.g = Math.floor(startColor.g + (endColor.g - startColor.g) * (i/(endPosition - 1)));
       color.b = Math.floor(startColor.b + (endColor.b - startColor.b) * (i/(endPosition - 1)));
-//mu'fka
       colors.push(color);
     }
 

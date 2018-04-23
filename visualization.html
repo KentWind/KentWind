@@ -189,30 +189,34 @@
               if ( typeof oldLayer !== 'undefined') {
                 var clearFuncVar;
                 oldWindy = windy;
+                oldWindy.newInfoAvailable();
                 function clearOldLayer() {
                   oldWindy.stopEvolve();
-                  oldWindy.newInfoAvailable();
                   oldWindy.stop();
                   map.removeLayer(oldLayer);
                   clearInterval(clearFuncVar);
                 }
-                clearFuncVar = setInterval(clearOldLayer, 2000);
-                //map.removeLayer(oldLayer);
+                clearFuncVar = setTimeout(clearOldLayer, 2000);
               }
               map.addLayer(rasterLayer);
 
-              console.log(map.getZoom());
               generateData();
               var dbData = pullData();
               // var dbData = [{
-              //                 Direction:7,
+              //                 Direction: Math.floor(Math.random() * 15) + 1,
               //                 Latitude:41.14689,
               //                 Longitude:-81.34567,
               //                 SensorID:1,
               //                 Speed:30
+              //               },
+              //               {
+              //                 Direction:Math.floor(Math.random() * 15) + 1,
+              //                 Latitude:41.14689,
+              //                 Longitude:-81.34517,
+              //                 SensorID:1,
+              //                 Speed:100
               //               }];
               convertData(dbData);
-              console.log(gfs);
 
               windy = new Windy({ canvas: rasterLayer._element, data: gfs }, CURRENTID);
               redraw();
