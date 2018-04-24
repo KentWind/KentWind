@@ -38,6 +38,7 @@
     var windy;
     var map, rasterLayer;
     var canvasSupport;
+    var graphicsArray = [];
 
     ///////////////////////////////////////////
     //
@@ -52,21 +53,64 @@
     ///////////////////////////////////////////
 
     require([
-    		"esri/map", "esri/Color", "esri/symbols/SimpleMarkerSymbol",
-    		"esri/symbols/SimpleLineSymbol", "esri/geometry/Circle", "esri/symbols/SimpleFillSymbol",
-    		"esri/graphic", "esri/layers/GraphicsLayer", "esri/dijit/BasemapToggle",
-    		"esri/dijit/HomeButton", "esri/geometry/webMercatorUtils", "esri/layers/ArcGISTiledMapServiceLayer",
-    		"esri/domUtils", "esri/request",
-    		"dojo/parser", "dojo/number", "dojo/json", "dojo/dom",
-    		"dijit/registry", "plugins/RasterLayer", "esri/layers/WebTiledLayer",
+    		"esri/map",
+        "esri/geometry/Geometry",
+        "esri/geometry/Point",
+        "esri/geometry/Polyline",
+        "esri/geometry/Polygon",
+        "esri/graphic",
+        "esri/InfoTemplate",
+        "esri/Color",
+        "esri/symbols/SimpleMarkerSymbol",
+    		"esri/symbols/SimpleLineSymbol",
+        "esri/geometry/Circle",
+        "esri/symbols/SimpleFillSymbol",
+    		"esri/graphic",
+        "esri/layers/GraphicsLayer",
+        "esri/dijit/BasemapToggle",
+    		"esri/dijit/HomeButton",
+        "esri/geometry/webMercatorUtils",
+        "esri/layers/ArcGISTiledMapServiceLayer",
+    		"esri/domUtils",
+        "esri/request",
+    		"dojo/parser",
+        "dojo/number",
+        "dojo/json",
+        "dojo/dom",
+    		"dijit/registry",
+        "plugins/RasterLayer",
+        "esri/layers/WebTiledLayer",
     		"esri/config",
     		"dojo/domReady!"
     	], function (
-    		Map, Color, SimpleMarkerSymbol, SimpleLineSymbol, Circle, SimpleFillSymbol,
-    		Graphic, GraphicsLayer, BasemapToggle, HomeButton, webMercatorUtils, ArcGISTiledMapServiceLayer,
-    		domUtils, esriRequest,
-    		parser, number, JSON, dom,
-    		registry, RasterLayer, WebTiledLayer, esriConfig) {
+    		Map,
+        Geometry,
+        Point,
+        Polyline,
+        Polygon,
+        Graphic,
+        InfoTemplate,
+        Color,
+        SimpleMarkerSymbol,
+        SimpleLineSymbol,
+        Circle,
+        SimpleFillSymbol,
+    		Graphic,
+        GraphicsLayer,
+        BasemapToggle,
+        HomeButton,
+        webMercatorUtils,
+        ArcGISTiledMapServiceLayer,
+    		domUtils,
+        esriRequest,
+    		parser,
+        number,
+        JSON,
+        dom,
+    		registry,
+        RasterLayer,
+        WebTiledLayer,
+        esriConfig) {
     	parser.parse();
     	// does the browser support canvas?
     	canvasSupport = supports_canvas();
@@ -83,6 +127,8 @@
     			// dark-gray
     			// topo
     		});
+
+
 
     	var home = new HomeButton({
     			map: map
@@ -170,11 +216,33 @@
     				}
     				map.addLayer(rasterLayer);
 
-    				console.log(map.getZoom());
+    				// console.log(map.getZoom());
 
-                    if ( DATA_STATUS_LIVE ) {
+                    if ( DATA_STATUS_LIVE ) {                  
                         generateData();
                         var dbData = pullData();
+
+                        var point = [];
+                        var pointSymbol = [];
+                        var pointAttributes = [];
+                        var pointInfoTemplate = [];
+                        var pointGraphic = [];
+                        for(var i = 0; i < dbData.length; i++){
+                          point[i] = new Point(dbData[i].Longitude, dbData[i].Latitude);
+                          pointSymbol[i] = new SimpleMarkerSymbol();
+                          pointAttributes[i] = { Building: dbData[i].Location, Sensor: dbData[i].SensorID };
+                          pointInfoTemplate[i] = new InfoTemplate("Library");
+                          pointGraphic[i] = new Graphic(point[i], pointSymbol[i], pointAttributes[i]).setInfoTemplate(pointInfoTemplate[i]);
+
+                          graphicsArray.push(pointGraphic[i]);
+                        }
+
+
+
+                        for (i = 0; i < graphicsArray.length; ++i) {
+                            map.graphics.add(graphicsArray[i]);
+                        }
+
                         // var dbData = [{
                         //                 Direction:7,
                         //                 Latitude:41.14689,
@@ -182,8 +250,8 @@
                         //                 SensorID:1,
                         //                 Speed:30
                         //               }];
+
                         convertData(dbData);
-                        console.log(gfs);
                     } else {
 
                         var current_time = new Date().getTime();
@@ -217,7 +285,6 @@
                         } else {
 
                             convertData(dbData);
-                            console.log(gfs);
 
                         }
 
