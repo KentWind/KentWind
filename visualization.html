@@ -39,6 +39,9 @@
     var map, rasterLayer;
     var canvasSupport;
     var graphicsArray = [];
+    var dbData;
+    var enableSensors = true;
+
 
     ///////////////////////////////////////////
     //
@@ -217,31 +220,19 @@
     				map.addLayer(rasterLayer);
 
     				// console.log(map.getZoom());
-
-                    if ( DATA_STATUS_LIVE ) {                  
+                    if ( DATA_STATUS_LIVE ) {
+                      for (i = 0; i < graphicsArray.length; ++i) {
+                          map.graphics.remove(graphicsArray[i]);
+                      }
                         generateData();
-                        var dbData = pullData();
+                        dbData = pullData();
 
-                        var point = [];
-                        var pointSymbol = [];
-                        var pointAttributes = [];
-                        var pointInfoTemplate = [];
-                        var pointGraphic = [];
-                        for(var i = 0; i < dbData.length; i++){
-                          point[i] = new Point(dbData[i].Longitude, dbData[i].Latitude);
-                          pointSymbol[i] = new SimpleMarkerSymbol();
-                          pointAttributes[i] = { Building: dbData[i].Location, Sensor: dbData[i].SensorID };
-                          pointInfoTemplate[i] = new InfoTemplate("Library");
-                          pointGraphic[i] = new Graphic(point[i], pointSymbol[i], pointAttributes[i]).setInfoTemplate(pointInfoTemplate[i]);
-
-                          graphicsArray.push(pointGraphic[i]);
+                        if(enableSensors){
+                          removeSensors();
+                          drawSensors();
                         }
 
 
-
-                        for (i = 0; i < graphicsArray.length; ++i) {
-                            map.graphics.add(graphicsArray[i]);
-                        }
 
                         // var dbData = [{
                         //                 Direction:7,
@@ -261,7 +252,7 @@
                             selected_time = GLOBAL_SLIDER_SECONDS;
                         }
 
-                        var dbData = pullHistoricalData( parseInt(selected_time) - 25, parseInt(selected_time));
+                        dbData = pullHistoricalData( parseInt(selected_time) - 25, parseInt(selected_time));
 
                         if ( dbData == null ) {
 
@@ -344,6 +335,51 @@
     				map.getZoom());
     		}, 0);
     	}
+
+      function toggleSensors(){
+        if(enableSensors) {
+          removeSensors();
+          enableSensors = false;
+        }
+        else {
+          drawSensors();
+          enableSensors = true;
+        }
+      }
+
+      function drawSensors() {
+        for (i = 0; i < graphicsArray.length; ++i) {
+            map.graphics.remove(graphicsArray[i]);
+        }
+        for(var i = 0; i < dbData.length; i++){
+          var point = new Point(dbData[i].Longitude, dbData[i].Latitude);
+          var pointSymbol = new SimpleMarkerSymbol();
+          var pointAttributes = { Speed: dbData[i].Speed, Direction: dbData[i].Direction, Building: dbData[i].Location, Sensor: dbData[i].SensorID};
+          var pointInfoTemplate = new InfoTemplate(dbData[i].Location);
+          var pointGraphic = new Graphic(point, pointSymbol, pointAttributes).setInfoTemplate(pointInfoTemplate);
+          graphicsArray.push(pointGraphic);
+
+        }
+
+        for (i = 0; i < graphicsArray.length; ++i) {
+            map.graphics.add(graphicsArray[i]);
+        }
+
+        console.log(map.graphics);
+      }
+
+      function removeSensors(){
+        for (i = 0; i < graphicsArray.length; ++i) {
+            map.graphics.remove(graphicsArray[i]);
+        }
+
+        graphicsArray = [];
+      }
+
+
+      document.getElementById("sensorButton").addEventListener("click",
+        toggleSensors);
+
     });
     </script>
 
@@ -362,6 +398,7 @@
         <!--<button id="changeColor" class="btn btn-danger navbar-btn">Change Color</button>-->
         <!--<button id="randomize" class="btn btn-danger navbar-btn">Randomize</button>-->
 		<button id="filterButton" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#filtersModal">Visualization Filters</button>
+    <button id="sensorButton" class="btn btn-primary navbar-btn">Toggle Sensors</button>
         <button id="timeButton" class="btn btn-primary navbar-btn pull-right" data-toggle="modal" data-target="#dateModal">Select Time</button>
         <div class="container-fluid pull-right" >
             <div class="well well-sm" style="margin-top: 5px;"><b>Current Time Display: </b><text id="currentTimeBox">LIVE</text></div>
