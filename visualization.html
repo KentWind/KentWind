@@ -22,6 +22,7 @@
     <script src="js/windy.js"></script>
     <script src="js/generator.js"></script>
     <script src="js/pullData.js"></script>
+    <script src="js/pullHistoricalData.js"></script>
 
     <script src="https://js.arcgis.com/3.20compact/"></script>
     <script>
@@ -31,10 +32,25 @@
     // Map/canvas initialization.
     //
     
+    var DATA_STATUS_LIVE = true;
+    
     var CURRENTID = 0;
     var windy;
     var map, rasterLayer;
     var canvasSupport;
+    
+    ///////////////////////////////////////////
+    //
+    // These give the UI access to reinvoke
+    // the generation of wind on the map.
+    //
+    
+    var GLOBAL_REFRESH_INTERVAL;
+    var GLOBAL_REFRESH_FUNCTION;
+    var GLOBAL_MAP_LOAD;
+    
+    ///////////////////////////////////////////
+    
     require([
     		"esri/map", "esri/Color", "esri/symbols/SimpleMarkerSymbol",
     		"esri/symbols/SimpleLineSymbol", "esri/geometry/Circle", "esri/symbols/SimpleFillSymbol",
@@ -100,18 +116,18 @@
 
     	}
 
-    	map.on("load", mapLoaded);
+    	map.on("load", mapLoaded );
 
-    	function mapLoaded() {
-        
-    		document.getElementById("changeColor").addEventListener("click", function () {
+    	//GLOBAL_MAP_LOAD = function () {//mapLoaded() {
+        function mapLoaded() {
+    		//document.getElementById("changeColor").addEventListener("click", function () {
     			//windy.newInfoAvailable();
     			//windy.modifyColors(0, 100, 0, 1);
     			//windy.modifyColors( randomInRange(0, 100), randomInRange(0, 100), randomInRange(0, 100), randomInRange(.5, 1) );
     			//windy.modifyColors(Math.floor(Math.random() * 176), Math.floor(Math.random() * 176), Math.floor(Math.random() * 176) , 1);
-    		});
+    		//});
 
-    		document.getElementById("randomize").addEventListener("click", function () {
+    		/*document.getElementById("randomize").addEventListener("click", function () {
     			windy.stopEvolve();
     			windy.newInfoAvailable();
     			map.removeLayer(rasterLayer);
@@ -119,9 +135,12 @@
     			//console.log("Button clicked");
     			++CURRENTID;
     			refreshData();
-    		});
+    		});*/
 
-    		function refreshData() {
+    		GLOBAL_REFRESH_FUNCTION = function () {//refreshData() {
+            
+                //alert( document.getElementById("currentTimeBox").innerHTML );
+            
     			if (canvasSupport) {
 
     				if (typeof rasterLayer !== 'undefined') {
@@ -135,6 +154,7 @@
     					var clearFuncVar;
     					oldWindy = windy;
                         oldWindy.fadeOut();
+                        //windy.fadeOut();
                         
     					function clearOldLayer() {
     						oldWindy.stopEvolve();
@@ -143,23 +163,65 @@
     						map.removeLayer(oldLayer);
     						clearInterval(clearFuncVar);
     					}
+                        
+                        //map.removeLayer(oldLayer);
     					clearFuncVar = setInterval(clearOldLayer, 5000);
     					//map.removeLayer(oldLayer);
     				}
     				map.addLayer(rasterLayer);
 
     				console.log(map.getZoom());
-    				generateData();
-    				var dbData = pullData();
-    				// var dbData = [{
-    				//                 Direction:7,
-    				//                 Latitude:41.14689,
-    				//                 Longitude:-81.34567,
-    				//                 SensorID:1,
-    				//                 Speed:30
-    				//               }];
-    				convertData(dbData);
-    				console.log(gfs);
+                    
+                    if ( DATA_STATUS_LIVE ) {
+                        generateData();
+                        var dbData = pullData();
+                        // var dbData = [{
+                        //                 Direction:7,
+                        //                 Latitude:41.14689,
+                        //                 Longitude:-81.34567,
+                        //                 SensorID:1,
+                        //                 Speed:30
+                        //               }];
+                        convertData(dbData);
+                        console.log(gfs);
+                    } else {
+                    
+                        var current_time = new Date().getTime();
+                        var selected_time = current_time - GLOBAL_SLIDER_SECONDS * 1000;
+                        
+                        if ( $('#epochText').val().length != 0 ) {
+                            selected_time = GLOBAL_SLIDER_SECONDS;
+                        }
+                    
+                        var dbData = pullHistoricalData( parseInt(selected_time) - 25, parseInt(selected_time));
+                        
+                        if ( dbData == null ) {
+                        
+                            //window.alert('No data entry found. Reverting to live data.');
+                        
+                            GLOBAL_SLIDER_SECONDS = 0;
+                            DATA_STATUS_LIVE = true;
+                            dom.byId("currentTimeBox").innerHTML = "NO DATA FOUND. REVERTING TO: LIVE";
+                            
+                            windy.stopEvolve();
+                            windy.newInfoAvailable();
+                            windy.stop();
+                            windy.fadeOut();
+                            
+                            map.removeLayer( rasterLayer );
+                            
+                            clearInterval( GLOBAL_REFRESH_INTERVAL );
+                            GLOBAL_REFRESH_INTERVAL = setInterval(GLOBAL_REFRESH_FUNCTION, 15000);
+                            GLOBAL_REFRESH_FUNCTION();
+                            
+                        } else {
+                        
+                            convertData(dbData);
+                            console.log(gfs);
+                        
+                        }
+                        
+                    }
 
     				windy = new Windy({
     						canvas: rasterLayer._element,
@@ -172,8 +234,9 @@
     			}
     		}
 
-    		refreshData();
-    		setInterval(refreshData, 15000);
+            GLOBAL_REFRESH_FUNCTION();
+    		//refreshData();
+    		GLOBAL_REFRESH_INTERVAL = setInterval(GLOBAL_REFRESH_FUNCTION, 15000);
 
     		map.on("extent-change", redraw);
     		map.on("resize", function () {});
@@ -229,15 +292,16 @@
   <body class="calcite">
     <nav class="navbar navbar-inverse" style="margin-bottom: 0px;">
       <div class="container-fluid">
-        <button id="changeColor" class="btn btn-danger navbar-btn">Change Color</button>
-        <button id="randomize" class="btn btn-danger navbar-btn">Randomize</button>
-		<button id="filterButton" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#filtersModal">Filters</button>
-		<div id="slider-container">
-			<b>Data Status: </b><span id="sliderValue"></span>
-			<input type="range" min="0" max="2592000" value="0" step="900" class="slider" id="slider">
-		</div>
+        <!--<button id="changeColor" class="btn btn-danger navbar-btn">Change Color</button>-->
+        <!--<button id="randomize" class="btn btn-danger navbar-btn">Randomize</button>-->
+		<button id="filterButton" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#filtersModal">Visualization Filters</button>
+        <button id="timeButton" class="btn btn-primary navbar-btn pull-right" data-toggle="modal" data-target="#dateModal">Select Time</button>
+        <div class="container-fluid pull-right" >
+            <div class="well well-sm" style="margin-top: 5px;"><b>Current Time Display: </b><text id="currentTimeBox">LIVE</text></div>
+        </div>
       </div>
     </nav>
+    
     <div id="mapCanvas" class = "map" style="height:100%;">
       <div id="HomeButton"></div>
       <div id="BasemapToggle"></div>
@@ -293,7 +357,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="row">
+						<!--<div class="row">
 							<div class="col-6">
 								<h4><b>Map Type</b></h4>
 							</div>
@@ -328,12 +392,48 @@
 									</div>
 								</div>
 							</div>
-						</div>
+						</div>-->
 					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 					<button type="button" class="btn btn-primary" id="applyFilters">Apply</button>
+				</div>
+			</div>
+		</div>
+	</div>
+    
+    <!-- Date Modal -->
+	<div class="modal fade" id="dateModal" role="dialog">
+		<div class="modal-dialog">
+			<!-- Modal content -->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h2 class="modal-title"><strong>WindMap Filter</strong></h4>
+				</div>
+				<div class="modal-body">
+					<div class="container">
+						<div class="row">
+							<div class="container">
+								<h4><b>Data Visualization</b></h4>
+                                
+                                <div id="slider-container">
+                                    <b>Data Status: </b><span id="sliderValue"></span>
+                                    <input type="range" min="0" max="2592000" value="0" step="900" class="slider" id="slider">
+                                </div>
+                                
+                                <div id="epochContainer">
+                                    <input type="text" id="epochText" style="background-color: black">
+                                </div>
+                                
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="applyDateFilters">Apply</button>
 				</div>
 			</div>
 		</div>

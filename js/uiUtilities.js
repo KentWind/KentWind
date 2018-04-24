@@ -1,3 +1,5 @@
+// Global var for slider
+var GLOBAL_SLIDER_SECONDS = 0;
 $(function () {
 	var sliderValue = $("#slider").val();
 
@@ -9,11 +11,18 @@ $(function () {
 
 		if (parseInt(sliderValue) == 0) {
 			$("#sliderValue").html("<b style='color: red; text-decoration: underline;'>LIVE</b>");
+            GLOBAL_SLIDER_SECONDS = sliderMinutes * 60;
+            
 		} else {
 			var sliderDays = sliderValue / 60 / 60 / 24;
+            
 			var sliderHours = sliderValue / 60 / 60;
 			var sliderMinutes = sliderValue / 60;
-			var sliderValueText = sliderDays + " day(s) ago | " + sliderHours + " hour(s) ago | " + sliderMinutes + " minute(s) ago";
+            GLOBAL_SLIDER_SECONDS = sliderMinutes * 60;
+            
+            
+            
+			var sliderValueText = sliderDays.toFixed(2) + " day(s) ago | " + sliderHours + " hour(s) ago | " + sliderMinutes + " minute(s) ago";
 			$("#sliderValue").text(sliderValueText);
 		}
 	});
@@ -94,4 +103,66 @@ $(function () {
 
 		windy.modifyColors(R, G, B, A);
 	});
+    
+    $("#applyDateFilters").click(function () {
+        
+        if ( $('#epochText').val().length == 0 ) {
+            if ( GLOBAL_SLIDER_SECONDS > 0 ) {
+                
+                var current_time = new Date().getTime();
+                var selected_time = new Date( current_time - GLOBAL_SLIDER_SECONDS * 1000 );
+                document.getElementById("currentTimeBox").innerHTML = selected_time;
+                DATA_STATUS_LIVE = false;
+                
+                windy.stopEvolve();
+                windy.newInfoAvailable();
+                windy.stop();
+                windy.fadeOut();
+                
+                map.removeLayer( rasterLayer );
+                
+                clearInterval( GLOBAL_REFRESH_INTERVAL );
+                GLOBAL_REFRESH_FUNCTION();
+
+            } else {
+                
+                DATA_STATUS_LIVE = true;
+                document.getElementById("currentTimeBox").innerHTML = "LIVE";
+                
+                windy.stopEvolve();
+                windy.newInfoAvailable();
+                windy.stop();
+                windy.fadeOut();
+                
+                map.removeLayer( rasterLayer );
+                
+                clearInterval( GLOBAL_REFRESH_INTERVAL );
+                GLOBAL_REFRESH_INTERVAL = setInterval(GLOBAL_REFRESH_FUNCTION, 15000);
+                
+            }
+            GLOBAL_REFRESH_FUNCTION();
+            //alert("Data Status: " + DATA_STATUS_LIVE + ", Minutes: " + SLIDER_MINUTES);
+        } else {
+            //var current_time = new Date().getTime();
+            //var selected_time = new Date( current_time - parseInt($('#epochText').val()) * 1000 );
+            var selected_time = new Date( parseInt($('#epochText').val()) );
+            
+            GLOBAL_SLIDER_SECONDS = parseInt($('#epochText').val());
+            
+            document.getElementById("currentTimeBox").innerHTML = selected_time;
+            DATA_STATUS_LIVE = false;
+                            
+            windy.stopEvolve();
+            windy.newInfoAvailable();
+            windy.stop();
+            windy.fadeOut();
+                
+            map.removeLayer( rasterLayer );
+                
+            clearInterval( GLOBAL_REFRESH_INTERVAL );
+            GLOBAL_REFRESH_FUNCTION();
+        }
+        
+	});
+    
 });
