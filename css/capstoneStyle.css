@@ -37,8 +37,8 @@
       }
 	  #slider-container
 	  {
-		float: right;
-		width: 50%;
+		float: none;
+		width: 45%;
 		color: white;
 	  }
 	  #slider
@@ -54,6 +54,11 @@
 		width: 40% !important;
 	  }
 	  #filtersModal .modal-content
+	  {
+		background-color: rgba(0, 0, 0, 0.5);
+		color: white;
+	  }
+      #dateModal .modal-content
 	  {
 		background-color: rgba(0, 0, 0, 0.5);
 		color: white;
