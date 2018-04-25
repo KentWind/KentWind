@@ -1,0 +1,72 @@
+      html,body {
+        width:100%;
+        height:100%;
+        margin: 0;
+        padding: 0px 0 0 0;
+      }
+      #HomeButton {
+        position: absolute;
+        top: 140px;
+        left: 15px;
+        z-index: 50;
+      }
+      #BasemapToggle {
+        position: absolute;
+        top: 75px;
+        right: 20px;
+        z-index: 50;
+      }
+      .basemapToggle {
+        width: 50px;
+        height: 50px;
+      }
+      .BasemapToggle .basemapTitle {
+        width: 100%;
+        background: #333333;
+        color: #cccccc;
+      }
+      .BasemapToggle .toggleButton {
+        background: #333333;
+      }
+      .esriSimpleSlider {
+        background-color: #333333;
+        color: white;
+      }
+      #mapCanvas {
+        padding:0;
+      }
+	  #slider-container
+	  {
+		float: none;
+		width: 45%;
+		color: white;
+	  }
+	  #slider
+	  {
+		direction: rtl;
+	  }
+	  .colorSlider
+	  {
+		width: 40% !important;
+	  }
+	  .averageSlider
+	  {
+		width: 40% !important;
+	  }
+	  #filtersModal .modal-content
+	  {
+		background-color: rgba(0, 0, 0, 0.5);
+		color: white;
+	  }
+      #dateModal .modal-content
+	  {
+		background-color: rgba(0, 0, 0, 0.5);
+		color: white;
+	  }
+	  #colorBox
+	  {
+		background-color: rgba(0, 0, 0, 0);
+		height: 20px;
+		width: 20px;
+		border: 1px solid white;
+	  }

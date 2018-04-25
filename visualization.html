@@ -1,385 +1,411 @@
-
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Wind Animation</title>
 
 	<!-- jquery -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <!--ORIGINAL CSS <link rel="stylesheet" href="https://js.arcgis.com/3.20/esri/css/esri.css"> -->
     <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/dijit/calcite.css">
     <link rel="stylesheet" href="https://js.arcgis.com/3.23/esri/themes/calcite/esri/esri.css">
-    <link rel="stylesheet" href="css/myStyle.css">
-    <style>
-      html,body {
-        width:100%;
-        height:100%;
-        margin: 0;
-        padding: 0px 0 0 0;
-      }
-      #HomeButton {
-        position: absolute;
-        top: 140px;
-        left: 15px;
-        z-index: 50;
-      }
-      #BasemapToggle {
-        position: absolute;
-        top: 75px;
-        right: 20px;
-        z-index: 50;
-      }
-      .basemapToggle {
-        width: 50px;
-        height: 50px;
-      }
-      .BasemapToggle .basemapTitle {
-        width: 100%;
-        background: #333333;
-        color: #cccccc;
-      }
-      .BasemapToggle .toggleButton {
-        background: #333333;
-      }
-      .esriSimpleSlider {
-        background-color: #333333;
-        color: white;
-      }
-      #mapCanvas {
-        padding:0;
-      }
-	  #slider-container
-	  {
-		float: right;
-		width: 50%;
-		color: white;
-	  }
-	  #slider
-	  {
-		direction: rtl;
-	  }
-	  .colorSlider
-	  {
-		width: 40% !important;
-	  }
-	  .averageSlider
-	  {
-		width: 40% !important;
-	  }
-	  #filtersModal .modal-content
-	  {
-		background-color: rgba(0, 0, 0, 0.5);
-		color: white;
-	  }
-	  #colorBox
-	  {
-		background-color: rgba(0, 0, 0, 0);
-		height: 20px;
-		width: 20px;
-		border: 1px solid white;
-	  }
-    </style>
 
-    <script>
-      var dojoConfig = {
-        paths: {
-          plugins: location.pathname.replace(/\/[^/]+$/, "") + "/plugins"
-        }
-      };
-    </script>
+    <link rel="stylesheet" href="css/visualizationStyle.css">
+    <link rel="stylesheet" href="css/capstoneStyle.css">
+
+    <!-- Path utility file provides pathing manipulation for certain files. -->
+    <script src="js/pathUtility.js"></script>
+
     <script src="js/dataConvert.js"></script>
     <script src="js/windy.js"></script>
     <script src="js/generator.js"></script>
     <script src="js/pullData.js"></script>
+    <script src="js/pullHistoricalData.js"></script>
 
     <script src="https://js.arcgis.com/3.20compact/"></script>
     <script>
+
+    ////////////////////////////////////////////////////////
+    //
+    // Map/canvas initialization.
+    //
+
+    var DATA_STATUS_LIVE = true;
+
     var CURRENTID = 0;
-	var windy;
-      var map, rasterLayer;
-      var canvasSupport;
-      require([
-        "esri/map", "esri/Color", "esri/symbols/SimpleMarkerSymbol",
-	"esri/symbols/SimpleLineSymbol", "esri/geometry/Circle", "esri/symbols/SimpleFillSymbol",
-        "esri/graphic", "esri/layers/GraphicsLayer", "esri/dijit/BasemapToggle",
-        "esri/dijit/HomeButton", "esri/geometry/webMercatorUtils", "esri/layers/ArcGISTiledMapServiceLayer",
-        "esri/domUtils", "esri/request",
-        "dojo/parser", "dojo/number", "dojo/json", "dojo/dom",
-        "dijit/registry", "plugins/RasterLayer","esri/layers/WebTiledLayer",
-        "esri/config",
-        "dojo/domReady!"
-      ], function(
-        Map, Color, SimpleMarkerSymbol, SimpleLineSymbol, Circle, SimpleFillSymbol,
-        Graphic, GraphicsLayer, BasemapToggle, HomeButton, webMercatorUtils, ArcGISTiledMapServiceLayer,
-        domUtils, esriRequest,
-        parser, number, JSON, dom,
-        registry, RasterLayer, WebTiledLayer, esriConfig
-      ){
-        parser.parse();
-        // does the browser support canvas?
-        canvasSupport = supports_canvas();
-        map = new Map("mapCanvas", {
-          center: [-81.3425, 41.1480],
-          zoom: 16,
-          basemap: "dark-gray",
-          // streets-night-vector
-          // satellite
-          // streets
-          // osm
-          // hybrid
-          // dark-gray-vector
-          // dark-gray
-          // topo
-        });
+    var windy;
+    var map, rasterLayer;
+    var canvasSupport;
+    var graphicsArray = [];
+    var dbData;
+    var enableSensors = true;
 
-        var home = new HomeButton({
-          map: map
-        }, "HomeButton");
-        home.startup();
-        var toggle = new BasemapToggle({
-          map: map,
-          basemap: "satellite"
-        }, "BasemapToggle");
-        toggle.startup();
-        dojo.connect(map, "onMouseMove", showCoordinates);
-        dojo.connect(map, "onMouseDrag", showCoordinates);
-        dojo.connect(map, "onClick", logCoordinates);
-        function showCoordinates(evt) {
-          //the map is in web mercator but display coordinates in geographic (lat, long)
-          var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
-          //display mouse coordinates
-          dom.byId("info").innerHTML = mp.y.toFixed(5) + ", " + mp.x.toFixed(5);
-        }
-        function logCoordinates(evt){
-          var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
-          console.log(mp.y.toFixed(5) + ", " + mp.x.toFixed(5));
 
-        }
-        map.on("load", mapLoaded);
+    ///////////////////////////////////////////
+    //
+    // These give the UI access to reinvoke
+    // the generation of wind on the map.
+    //
+
+    var GLOBAL_REFRESH_INTERVAL;
+    var GLOBAL_REFRESH_FUNCTION;
+    var GLOBAL_MAP_LOAD;
+
+    ///////////////////////////////////////////
+
+    require([
+    		"esri/map",
+        "esri/geometry/Geometry",
+        "esri/geometry/Point",
+        "esri/geometry/Polyline",
+        "esri/geometry/Polygon",
+        "esri/graphic",
+        "esri/InfoTemplate",
+        "esri/Color",
+        "esri/symbols/SimpleMarkerSymbol",
+    		"esri/symbols/SimpleLineSymbol",
+        "esri/geometry/Circle",
+        "esri/symbols/SimpleFillSymbol",
+    		"esri/graphic",
+        "esri/layers/GraphicsLayer",
+        "esri/dijit/BasemapToggle",
+    		"esri/dijit/HomeButton",
+        "esri/geometry/webMercatorUtils",
+        "esri/layers/ArcGISTiledMapServiceLayer",
+    		"esri/domUtils",
+        "esri/request",
+    		"dojo/parser",
+        "dojo/number",
+        "dojo/json",
+        "dojo/dom",
+    		"dijit/registry",
+        "plugins/RasterLayer",
+        "esri/layers/WebTiledLayer",
+    		"esri/config",
+    		"dojo/domReady!"
+    	], function (
+    		Map,
+        Geometry,
+        Point,
+        Polyline,
+        Polygon,
+        Graphic,
+        InfoTemplate,
+        Color,
+        SimpleMarkerSymbol,
+        SimpleLineSymbol,
+        Circle,
+        SimpleFillSymbol,
+    		Graphic,
+        GraphicsLayer,
+        BasemapToggle,
+        HomeButton,
+        webMercatorUtils,
+        ArcGISTiledMapServiceLayer,
+    		domUtils,
+        esriRequest,
+    		parser,
+        number,
+        JSON,
+        dom,
+    		registry,
+        RasterLayer,
+        WebTiledLayer,
+        esriConfig) {
+    	parser.parse();
+    	// does the browser support canvas?
+    	canvasSupport = supports_canvas();
+    	map = new Map("mapCanvas", {
+    			center: [-81.3425, 41.1480],
+    			zoom: 16,
+    			basemap: "dark-gray",
+    			// streets-night-vector
+    			// satellite
+    			// streets
+    			// osm
+    			// hybrid
+    			// dark-gray-vector
+    			// dark-gray
+    			// topo
+    		});
+
+
+
+    	var home = new HomeButton({
+    			map: map
+    		}, "HomeButton");
+
+    	home.startup();
+
+    	var toggle = new BasemapToggle({
+    			map: map,
+    			basemap: "satellite"
+    		}, "BasemapToggle");
+
+    	toggle.startup();
+
+    	dojo.connect(map, "onMouseMove", showCoordinates);
+    	dojo.connect(map, "onMouseDrag", showCoordinates);
+    	dojo.connect(map, "onClick", logCoordinates);
+
+    	function showCoordinates(evt) {
+    		//the map is in web mercator but display coordinates in geographic (lat, long)
+    		var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
+    		//display mouse coordinates
+    		var lat = mp.y.toFixed(5);
+    		var lon = 360 + parseFloat(mp.x.toFixed(5));
+    		dom.byId("info").innerHTML = lat + ", " + lon;
+    	}
+
+    	function logCoordinates(evt) {
+    		var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
+    		console.log(mp.y.toFixed(5) + ", " + mp.x.toFixed(5));
+
+    	}
+
+    	map.on("load", mapLoaded );
+
+    	//GLOBAL_MAP_LOAD = function () {//mapLoaded() {
         function mapLoaded() {
-          document.getElementById("changeColor").addEventListener("click", function(){
-            //windy.newInfoAvailable();
-            //windy.modifyColors(0, 100, 0, 1);
-            //windy.modifyColors( randomInRange(0, 100), randomInRange(0, 100), randomInRange(0, 100), randomInRange(.5, 1) );
-            //windy.modifyColors(Math.floor(Math.random() * 176), Math.floor(Math.random() * 176), Math.floor(Math.random() * 176) , 1);
-          });
-          document.getElementById("randomize").addEventListener("click", function(){
-            //windy.stopEvolve();
-            windy.newInfoAvailable();
-            //map.removeLayer(rasterLayer);
-            //windy.stop();
-            //console.log("Button clicked");
-            ++CURRENTID;
-            refreshData();
-          });
-          function refreshData(){
-            if ( canvasSupport ) {
-              if ( typeof rasterLayer !== 'undefined' ) {
-                oldLayer = rasterLayer;
-              }
-              rasterLayer = new RasterLayer(null, {
-                opacity: 1
-              });
-              if ( typeof oldLayer !== 'undefined') {
-                var clearFuncVar;
-                oldWindy = windy;
-                function clearOldLayer() {
-                  oldWindy.stopEvolve();
-                  //oldWindy.newInfoAvailable();
-                  oldWindy.stop();
-                  map.removeLayer(oldLayer);
-                  clearInterval(clearFuncVar);
-                }
-                clearFuncVar = setInterval(clearOldLayer, 2000);
-                //map.removeLayer(oldLayer);
-              }
-              map.addLayer(rasterLayer);
+    		//document.getElementById("changeColor").addEventListener("click", function () {
+    			//windy.newInfoAvailable();
+    			//windy.modifyColors(0, 100, 0, 1);
+    			//windy.modifyColors( randomInRange(0, 100), randomInRange(0, 100), randomInRange(0, 100), randomInRange(.5, 1) );
+    			//windy.modifyColors(Math.floor(Math.random() * 176), Math.floor(Math.random() * 176), Math.floor(Math.random() * 176) , 1);
+    		//});
 
-              generateData();
-              var dbData = pullData();
-              convertData(dbData);
+    		/*document.getElementById("randomize").addEventListener("click", function () {
+    			windy.stopEvolve();
+    			windy.newInfoAvailable();
+    			map.removeLayer(rasterLayer);
+    			windy.stop();
+    			//console.log("Button clicked");
+    			++CURRENTID;
+    			refreshData();
+    		});*/
 
-              windy = new Windy({ canvas: rasterLayer._element, data: gfs }, CURRENTID);
-              redraw();
+    		GLOBAL_REFRESH_FUNCTION = function () {//refreshData() {
 
-            } else {
-              dom.byId("mapCanvas").innerHTML = "This browser doesn't support canvas. Visit <a target='_blank' href='http://www.caniuse.com/#search=canvas'>caniuse.com</a> for supported browsers";
-            }
-          }
-          refreshData();
-          setInterval(refreshData, 15000);
+                //alert( document.getElementById("currentTimeBox").innerHTML );
 
-          map.on("extent-change", redraw);
-          map.on("resize", function(){});
-          map.on("zoom-start", redraw);
-          var symbol = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
+    			if (canvasSupport) {
 
-          var gl = new GraphicsLayer({ id: "circles" });
-          map.addLayer(gl);
-          map.on("click", function(e) {
-            var radius = 2;
-            var circle = new Circle({
-              center: e.mapPoint,
-              radius: radius
-            });
-            var graphic = new Graphic(circle, symbol);
-            gl.add(graphic);
-          });
+    				if (typeof rasterLayer !== 'undefined') {
+    					oldLayer = rasterLayer;
+    				}
+
+    				rasterLayer = new RasterLayer(null, {
+    						opacity: 1
+    					});
+    				if (typeof oldLayer !== 'undefined') {
+    					var clearFuncVar;
+    					oldWindy = windy;
+                        oldWindy.fadeOut();
+                        //windy.fadeOut();
+
+    					function clearOldLayer() {
+    						oldWindy.stopEvolve();
+    						oldWindy.newInfoAvailable();
+    						oldWindy.stop();
+    						map.removeLayer(oldLayer);
+    						clearInterval(clearFuncVar);
+    					}
+
+                        //map.removeLayer(oldLayer);
+    					clearFuncVar = setInterval(clearOldLayer, 5000);
+    					//map.removeLayer(oldLayer);
+    				}
+    				map.addLayer(rasterLayer);
+
+    				// console.log(map.getZoom());
+                    if ( DATA_STATUS_LIVE ) {
+                      for (i = 0; i < graphicsArray.length; ++i) {
+                          map.graphics.remove(graphicsArray[i]);
+                      }
+                        generateData();
+                        dbData = pullData();
+
+                        if(enableSensors){
+                          removeSensors();
+                          drawSensors();
+                        }
+
+
+
+                        // var dbData = [{
+                        //                 Direction:7,
+                        //                 Latitude:41.14689,
+                        //                 Longitude:-81.34567,
+                        //                 SensorID:1,
+                        //                 Speed:30
+                        //               }];
+
+                        convertData(dbData);
+                    } else {
+
+                        var current_time = new Date().getTime();
+                        var selected_time = current_time - GLOBAL_SLIDER_SECONDS * 1000;
+
+                        if ( $('#epochText').val().length != 0 ) {
+                            selected_time = GLOBAL_SLIDER_SECONDS;
+                        }
+
+                        dbData = pullHistoricalData( parseInt(selected_time) - 25, parseInt(selected_time));
+
+                        if ( dbData == null ) {
+
+                            //window.alert('No data entry found. Reverting to live data.');
+
+                            GLOBAL_SLIDER_SECONDS = 0;
+                            DATA_STATUS_LIVE = true;
+                            dom.byId("currentTimeBox").innerHTML = "NO DATA FOUND. REVERTING TO: LIVE";
+
+                            windy.stopEvolve();
+                            windy.newInfoAvailable();
+                            windy.stop();
+                            windy.fadeOut();
+
+                            map.removeLayer( rasterLayer );
+
+                            clearInterval( GLOBAL_REFRESH_INTERVAL );
+                            GLOBAL_REFRESH_INTERVAL = setInterval(GLOBAL_REFRESH_FUNCTION, 15000);
+                            GLOBAL_REFRESH_FUNCTION();
+
+                        } else {
+
+                            convertData(dbData);
+
+                        }
+
+                    }
+
+    				windy = new Windy({
+    						canvas: rasterLayer._element,
+    						data: gfs
+    					}, CURRENTID);
+    				redraw();
+
+    			} else {
+    				dom.byId("mapCanvas").innerHTML = "This browser doesn't support canvas. Visit <a target='_blank' href='http://www.caniuse.com/#search=canvas'>caniuse.com</a> for supported browsers";
+    			}
+    		}
+
+            GLOBAL_REFRESH_FUNCTION();
+    		//refreshData();
+    		GLOBAL_REFRESH_INTERVAL = setInterval(GLOBAL_REFRESH_FUNCTION, 15000);
+
+    		map.on("extent-change", redraw);
+    		map.on("resize", function () {});
+    		map.on("zoom-start", redraw);
+    		var symbol = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
+
+    		var gl = new GraphicsLayer({
+    				id: "circles"
+    			});
+    		map.addLayer(gl);
+    		map.on("click", function (e) {
+    			var radius = 2;
+    			var circle = new Circle({
+    					center: e.mapPoint,
+    					radius: radius
+    				});
+    			var graphic = new Graphic(circle, symbol);
+    			gl.add(graphic);
+    		});
+    	}
+
+    	// does the browser support canvas?
+    	function supports_canvas() {
+    		return !!document.createElement("canvas").getContext;
+    	}
+
+    	function redraw() {
+    		rasterLayer._element.width = map.width;
+    		rasterLayer._element.height = map.height;
+    		windy.stop();
+    		var extent = map.geographicExtent;
+    		setTimeout(function () {
+    			windy.start(
+    				[[0, 0], [map.width, map.height]],
+    				map.width,
+    				map.height,
+    				[[extent.xmin, extent.ymin], [extent.xmax, extent.ymax]],
+    				map.getZoom());
+    		}, 0);
+    	}
+
+      function toggleSensors(){
+        if(enableSensors) {
+          removeSensors();
+          enableSensors = false;
         }
-        // does the browser support canvas?
-        function supports_canvas() {
-          return !!document.createElement("canvas").getContext;
+        else {
+          drawSensors();
+          enableSensors = true;
         }
-        function redraw(){
-          rasterLayer._element.width = map.width;
-          rasterLayer._element.height = map.height;
-          windy.stop();
-          var extent = map.geographicExtent;
-          setTimeout(function(){
-            windy.start(
-              [[0,0],[map.width, map.height]],
-              map.width,
-              map.height,
-              [[extent.xmin, extent.ymin],[extent.xmax, extent.ymax]]
-            );
-          },0);
+      }
+
+      function drawSensors() {
+        for (i = 0; i < graphicsArray.length; ++i) {
+            map.graphics.remove(graphicsArray[i]);
         }
-      });
+        for(var i = 0; i < dbData.length; i++){
+          var point = new Point(dbData[i].Longitude, dbData[i].Latitude);
+          var pointSymbol = new SimpleMarkerSymbol();
+          var pointAttributes = { Speed: dbData[i].Speed, Direction: dbData[i].Direction, Building: dbData[i].Location, Sensor: dbData[i].SensorID};
+          var pointInfoTemplate = new InfoTemplate(dbData[i].Location);
+          var pointGraphic = new Graphic(point, pointSymbol, pointAttributes).setInfoTemplate(pointInfoTemplate);
+          graphicsArray.push(pointGraphic);
 
-	  $(function() {
-		  var sliderValue = $("#slider").val();
+        }
 
-		  $("#sliderValue").html("<b style='color: red; text-decoration: underline;'>LIVE</b>");
+        for (i = 0; i < graphicsArray.length; ++i) {
+            map.graphics.add(graphicsArray[i]);
+        }
 
-		  $("#slider").on('change input', function() {
+        console.log(map.graphics);
+      }
 
-		     sliderValue = $("#slider").val();
+      function removeSensors(){
+        for (i = 0; i < graphicsArray.length; ++i) {
+            map.graphics.remove(graphicsArray[i]);
+        }
 
-			 if (parseInt(sliderValue) == 0)
-			 {
-				$("#sliderValue").html("<b style='color: red; text-decoration: underline;'>LIVE</b>");
-			 }
-			 else
-			 {
-				var sliderDays = sliderValue / 60 / 60 / 24;
-				var sliderHours = sliderValue / 60 / 60;
-				var sliderMinutes = sliderValue / 60;
-				var sliderValueText = sliderDays + " day(s) ago | " + sliderHours + " hour(s) ago | " + sliderMinutes + " minute(s) ago";
-				$("#sliderValue").text(sliderValueText);
-			 }
-		  });
+        graphicsArray = [];
+      }
 
-		  $("input[class=colorSlider]").on('change input', function() {
-			changeColorBox();
-		  });
 
-		  var today = new Date();
-		  var todayString = today.getMonth() + 1 + "/" + today.getDate() + "/" + today.getFullYear();
-		  $("#endDaysSliderValue").text("0 days ago - Date: " + todayString);
-		  $("#fromDaysSliderValue").text("0 days ago - Date: " + todayString);
+      document.getElementById("sensorButton").addEventListener("click",
+        toggleSensors);
 
-		  $("#fromDaysSlider").on('change input', function() {
-			changeFromDaysSlider();
-			updateEndDaysSliderText();
-		  });
-
-		  $("#endDaysSlider").on('change input', function() {
-			changeEndDaysSlider();
-			updateFromDaysSliderText();
-		  });
-
-		  $("#MapTypeOption").change(function () {
-			if ($('input[name=maptype]:checked', '#MapTypeOption').val() == "Average")
-			{
-				$("#averageFilters").removeClass("hidden");
-			}
-			else
-			{
-				$("#averageFilters").addClass("hidden");
-			}
-		  });
-
-		  function changeFromDaysSlider()
-		  {
-			updateFromDaysSliderText();
-
-			if(parseInt($("#endDaysSlider").val()) < parseInt($("#fromDaysSlider").val()))
-			{
-				$("#endDaysSlider").val($("#fromDaysSlider").val());
-			}
-		  }
-
-		  function changeEndDaysSlider()
-		  {
-			updateEndDaysSliderText();
-
-			if(parseInt($("#endDaysSlider").val()) < parseInt($("#fromDaysSlider").val()))
-			{
-				$("#fromDaysSlider").val($("#endDaysSlider").val());
-			}
-		  }
-
-		  function updateFromDaysSliderText()
-		  {
-			var days = $("#fromDaysSlider").val();
-			var date = new Date(new Date().setDate(today.getDate()-days));
-			var dateString = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
-
-			$("#fromDaysSliderValue").text(days + " days ago - Date: " + dateString);
-		  }
-
-		  function updateEndDaysSliderText()
-		  {
-			var days = $("#endDaysSlider").val();
-			var date = new Date(new Date().setDate(today.getDate()-days));
-			var dateString = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
-
-			$("#endDaysSliderValue").text(days + " days ago - Date: " + dateString);
-		  }
-
-		  function changeColorBox()
-		  {
-			var R = parseInt($("#RGBA-RSlider").val());
-			var G = parseInt($("#RGBA-GSlider").val());
-			var B = parseInt($("#RGBA-BSlider").val());
-			var A = parseInt($("#RGBA-ASlider").val());
-
-			$("colorBox").css("background-color: rgba(" + R + ", " + G + ", " + B + ", " + A + ");");
-		  }
-
-		  $("#applyFilters").click(function() {
-			var R = parseInt($("#RGBA-RSlider").val());
-			var G = parseInt($("#RGBA-GSlider").val());
-			var B = parseInt($("#RGBA-BSlider").val());
-			var A = parseInt($("#RGBA-RSlider").val());
-
-			windy.modifyColors(R, G, B, A);
-		  });
-
-	});
+    });
     </script>
+
+    <!-- The utility file adds functionality to the UI objects. -->
+    <script src="js/uiUtilities.js"></script>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  </head>
+</head>
 
   <body class="calcite">
     <nav class="navbar navbar-inverse" style="margin-bottom: 0px;">
       <div class="container-fluid">
-        <button id="changeColor" class="btn btn-danger navbar-btn">Change Color</button>
-        <button id="randomize" class="btn btn-danger navbar-btn">Randomize</button>
-		<button id="filterButton" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#filtersModal">Filters</button>
-		<div id="slider-container">
-			<b>Data Status: </b><span id="sliderValue"></span>
-			<input type="range" min="0" max="2592000" value="0" step="900" class="slider" id="slider">
-		</div>
+        <!--<button id="changeColor" class="btn btn-danger navbar-btn">Change Color</button>-->
+        <!--<button id="randomize" class="btn btn-danger navbar-btn">Randomize</button>-->
+		<button id="filterButton" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#filtersModal">Visualization Filters</button>
+    <button id="sensorButton" class="btn btn-primary navbar-btn">Toggle Sensors</button>
+        <button id="timeButton" class="btn btn-primary navbar-btn pull-right" data-toggle="modal" data-target="#dateModal">Select Time</button>
+        <div class="container-fluid pull-right" >
+            <div class="well well-sm" style="margin-top: 5px;"><b>Current Time Display: </b><text id="currentTimeBox">LIVE</text></div>
+        </div>
       </div>
     </nav>
+
     <div id="mapCanvas" class = "map" style="height:100%;">
       <div id="HomeButton"></div>
       <div id="BasemapToggle"></div>
@@ -435,7 +461,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="row">
+						<!--<div class="row">
 							<div class="col-6">
 								<h4><b>Map Type</b></h4>
 							</div>
@@ -470,12 +496,48 @@
 									</div>
 								</div>
 							</div>
-						</div>
+						</div>-->
 					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 					<button type="button" class="btn btn-primary" id="applyFilters">Apply</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <!-- Date Modal -->
+	<div class="modal fade" id="dateModal" role="dialog">
+		<div class="modal-dialog">
+			<!-- Modal content -->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h2 class="modal-title"><strong>WindMap Filter</strong></h4>
+				</div>
+				<div class="modal-body">
+					<div class="container">
+						<div class="row">
+							<div class="container">
+								<h4><b>Data Visualization</b></h4>
+
+                                <div id="slider-container">
+                                    <b>Data Status: </b><span id="sliderValue"></span>
+                                    <input type="range" min="0" max="2592000" value="0" step="900" class="slider" id="slider">
+                                </div>
+
+                                <div id="epochContainer">
+                                    <input type="text" id="epochText" style="background-color: black">
+                                </div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="applyDateFilters">Apply</button>
 				</div>
 			</div>
 		</div>

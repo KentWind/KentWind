@@ -21,6 +21,3 @@ function pullData() {
     }
     return result;
 }
-
-var test = pullData();
-console.log(test);
