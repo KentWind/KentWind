@@ -1,9 +1,15 @@
-function generateData() {
+function generateData(isRandom) {
     for (var i = 1; i <= MAX_SENSORS; i++) {
         var tableEntry = {};
         tableEntry.SensorID = i;
-        tableEntry.Speed = Math.floor(Math.random() * 100) + 1 //Random number 1-100.
-        tableEntry.Direction = Math.floor(Math.random() * 15) + 1 //Random number 1-15.
+
+        if(isRandom) {
+          tableEntry.Speed = Math.floor(Math.random() * 100) + 1 //Random number 1-100.
+          tableEntry.Direction = Math.floor(Math.random() * 15) + 1 //Random number 1-15.
+        } else {
+          tableEntry.Speed = 50 //for demo purposes
+          tableEntry.Direction = 2 //for demo purposes
+        }
         $.ajax({
             url: 'php/utilities/serverPush.php',
             type: 'POST',

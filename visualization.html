@@ -57,6 +57,9 @@
 
     require([
     		"esri/map",
+        "esri/layers/ArcGISTiledMapServiceLayer",
+        "dojo/on",
+        "dijit/registry",
         "esri/geometry/Geometry",
         "esri/geometry/Point",
         "esri/geometry/Polyline",
@@ -87,6 +90,7 @@
     		"dojo/domReady!"
     	], function (
     		Map,
+        ArcGISTiledMapServiceLayer, on, registry,
         Geometry,
         Point,
         Polyline,
@@ -131,7 +135,21 @@
     			// topo
     		});
 
+        var satellite = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer");
+        map.addLayer(satellite);
+        var darkgray = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer");
+        map.addLayer(darkgray);
 
+        //wire an event handler for the dojo slider
+        map.on("load", function() {
+          on(registry.byId('sliderOpacity'), 'change', changeOpacity);
+        });
+
+        function changeOpacity(op) {
+            var newOp = (op / 100);
+            satellite.setOpacity(newOp);
+            darkgray.setOpacity(1.0 - newOp);
+        }
 
     	var home = new HomeButton({
     			map: map
@@ -139,12 +157,12 @@
 
     	home.startup();
 
-    	var toggle = new BasemapToggle({
-    			map: map,
-    			basemap: "satellite"
-    		}, "BasemapToggle");
+    	// var toggle = new BasemapToggle({
+    	// 		map: map,
+    	// 		basemap: "satellite"
+    	// 	}, "BasemapToggle");
 
-    	toggle.startup();
+    	// toggle.startup();
 
     	dojo.connect(map, "onMouseMove", showCoordinates);
     	dojo.connect(map, "onMouseDrag", showCoordinates);
@@ -224,7 +242,8 @@
                       for (i = 0; i < graphicsArray.length; ++i) {
                           map.graphics.remove(graphicsArray[i]);
                       }
-                        generateData();
+
+                        generateData(true);
                         dbData = pullData();
 
                         if(enableSensors){
@@ -411,6 +430,21 @@
       <div id="BasemapToggle"></div>
       <span id="info" style="position:absolute; left:15px; bottom:10px; color:lightgrey; z-index:50;"></span>
     </div>
+
+
+    <div id="sliderWrapper"> <!-- slider divs -->
+
+  <div id="sliderOpacity"
+       data-dojo-type="dijit/form/HorizontalSlider"
+       data-dojo-props="showButtons:'true', value:0, minimum:0, maximum:100, discreteValues:101, intermediateChanges:true">
+    <ol id="sliderLabels"
+        data-dojo-type="dijit/form/HorizontalRuleLabels"
+        data-dojo-props="container:'topDecoration'">
+      <li>Vector</li>
+      <li>Satellite</li>
+    </ol>
+  </div>
+</div> <!-- end slider divs -->
 
 	<!-- Filters Modal -->
 	<div class="modal fade" id="filtersModal" role="dialog">
