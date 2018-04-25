@@ -249,8 +249,10 @@
                         var selected_time = current_time - GLOBAL_SLIDER_SECONDS * 1000;
 
                         if ( $('#epochText').val().length != 0 ) {
-                            selected_time = GLOBAL_SLIDER_SECONDS;
+                            selected_time = GLOBAL_SLIDER_SECONDS / 1000;
                         }
+						
+						alert(selected_time + new Date(selected_time * 1000));
 
                         dbData = pullHistoricalData( parseInt(selected_time) - 25, parseInt(selected_time));
 
