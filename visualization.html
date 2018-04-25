@@ -174,7 +174,7 @@
     		//display mouse coordinates
     		var lat = mp.y.toFixed(5);
     		var lon = 360 + parseFloat(mp.x.toFixed(5));
-    		dom.byId("info").innerHTML = lat + ", " + lon;
+    		dom.byId("coordinates").innerHTML = lat + ", " + lon;
     	}
 
     	function logCoordinates(evt) {
@@ -426,19 +426,13 @@
     		</ul>
         <!--<button id="changeColor" class="btn btn-danger navbar-btn">Change Color</button>-->
         <!--<button id="randomize" class="btn btn-danger navbar-btn">Randomize</button>-->
-		<button id="filterButton" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#filtersModal">Visualization Filters</button>
-    <button id="sensorButton" class="btn btn-primary navbar-btn">Toggle Sensors</button>
-        <button id="timeButton" class="btn btn-primary navbar-btn pull-right" data-toggle="modal" data-target="#dateModal">Select Time</button>
-        <div class="container-fluid pull-right" >
-            <div class="well well-sm" style="margin-top: 5px;"><b>Current Time Display: </b><text id="currentTimeBox">LIVE</text></div>
-        </div>
       </div>
     </nav>
 
     <div id="mapCanvas" class = "map" style="height:100%;">
       <div id="HomeButton"></div>
       <div id="BasemapToggle"></div>
-      <span id="info" style="position:absolute; left:15px; bottom:10px; color:lightgrey; z-index:50;"></span>
+      <span id="coordinates" style="position:absolute; left:15px; bottom:60px; color:lightgrey; z-index:50;"></span>
     </div>
 
 
@@ -586,6 +580,19 @@
 			</div>
 		</div>
 	</div>
+
+  <nav class="navbar navbar-inverse" style="position: fixed; bottom: -35px; width: 100%;">
+    <div class="container-fluid">
+      <!--<button id="changeColor" class="btn btn-danger navbar-btn">Change Color</button>-->
+      <!--<button id="randomize" class="btn btn-danger navbar-btn">Randomize</button>-->
+  <button id="filterButton" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#filtersModal">Visualization Filters</button>
+  <button id="sensorButton" class="btn btn-primary navbar-btn">Toggle Sensors</button>
+      <button id="timeButton" class="btn btn-primary navbar-btn pull-right" data-toggle="modal" data-target="#dateModal">Select Time</button>
+      <div class="container-fluid pull-right" >
+          <div class="well well-sm" style="margin-top: 5px;"><b>Current Time Display: </b><text id="currentTimeBox">LIVE</text></div>
+      </div>
+    </div>
+  </nav>
 
   </body>
 
