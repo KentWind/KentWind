@@ -135,21 +135,7 @@
     			// topo
     		});
 
-        var satellite = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer");
-        map.addLayer(satellite);
-        var darkgray = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer");
-        map.addLayer(darkgray);
 
-        //wire an event handler for the dojo slider
-        map.on("load", function() {
-          on(registry.byId('sliderOpacity'), 'change', changeOpacity);
-        });
-
-        function changeOpacity(op) {
-            var newOp = (op / 100);
-            satellite.setOpacity(newOp);
-            darkgray.setOpacity(1.0 - newOp);
-        }
 
     	var home = new HomeButton({
     			map: map
@@ -203,6 +189,22 @@
     			++CURRENTID;
     			refreshData();
     		});*/
+
+        var satellite = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer");
+        map.addLayer(satellite);
+        var darkgray = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer");
+        map.addLayer(darkgray);
+
+        window.onload = function() {
+          on(registry.byId('sliderOpacity'), 'change', changeOpacity);
+        }
+
+
+        function changeOpacity(op) {
+            var newOp = (op / 100);
+            satellite.setOpacity(newOp);
+            darkgray.setOpacity(1.0 - newOp);
+        }
 
     		GLOBAL_REFRESH_FUNCTION = function () {//refreshData() {
 
@@ -270,7 +272,7 @@
                         if ( $('#epochText').val().length != 0 ) {
                             selected_time = GLOBAL_SLIDER_SECONDS / 1000;
                         }
-						
+
 						alert(selected_time + new Date(selected_time * 1000));
 
                         dbData = pullHistoricalData( parseInt(selected_time) - 25, parseInt(selected_time));
@@ -386,7 +388,6 @@
             map.graphics.add(graphicsArray[i]);
         }
 
-        console.log(map.graphics);
       }
 
       function removeSensors(){
@@ -434,8 +435,7 @@
     </div>
 
 
-    <div id="sliderWrapper"> <!-- slider divs -->
-
+<div id="sliderWrapper"> <!-- slider divs -->
   <div id="sliderOpacity"
        data-dojo-type="dijit/form/HorizontalSlider"
        data-dojo-props="showButtons:'true', value:0, minimum:0, maximum:100, discreteValues:101, intermediateChanges:true">
