@@ -270,7 +270,7 @@
                         if ( $('#epochText').val().length != 0 ) {
                             selected_time = GLOBAL_SLIDER_SECONDS / 1000;
                         }
-						
+
 						alert(selected_time + new Date(selected_time * 1000));
 
                         dbData = pullHistoricalData( parseInt(selected_time) - 25, parseInt(selected_time));
@@ -413,9 +413,17 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </head>
 
-  <body class="calcite">
-    <nav class="navbar navbar-inverse" style="margin-bottom: 0px;">
-      <div class="container-fluid">
+  <body class="calcite background-color-black">
+    <nav class="navbar navbar-inverse" style="margin-bottom: 0;">
+    	<div class="container-fluid">
+    		<div class="navbar-header">
+    			<a class="navbar-brand" href="index.php">KentWind&trade;</a>
+    		</div>
+    		<ul class="nav navbar-nav">
+    			<li id="linkHome"><a href="index.php"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+    			<li id="linkWindMap" class="active"><a href="#"><span class="glyphicon glyphicon-send"></span> WindMap</a></li>
+    			<li id="linkAboutUs"><a href="about"><span class="glyphicon glyphicon-info-sign"></span> About Us</a></li>
+    		</ul>
         <!--<button id="changeColor" class="btn btn-danger navbar-btn">Change Color</button>-->
         <!--<button id="randomize" class="btn btn-danger navbar-btn">Randomize</button>-->
 		<button id="filterButton" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#filtersModal">Visualization Filters</button>
