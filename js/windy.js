@@ -266,7 +266,7 @@ var Windy = function (params, current_ID) {
 			columns = [];
 		};
 
-		field.randomize = function (o) { // UNDONE: this method is terrible
+		field.randomize = function (o) { //  this method is terrible
 			var x,
 			y;
 			var safetyNet = 0;

@@ -43,7 +43,7 @@
     var enableSensors = true;
     var STARTCOLOR = {  r: 0, g: 169, b: 255  };
     var ENDCOLOR = {  r: 255, g: 255, b: 0  };
-
+    var cardinalDirections = ["N", "NNE", "NE", "NEE", "E", "SEE", "SE", "SSE", "S", "SSW", "SW", "SWW", "W", "NWW", "NW", "NNW"];
 
     ///////////////////////////////////////////
     //
@@ -324,21 +324,7 @@
     		map.on("extent-change", redraw);
     		map.on("resize", function () {});
     		map.on("zoom-start", redraw);
-    		var symbol = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
 
-    		var gl = new GraphicsLayer({
-    				id: "circles"
-    			});
-    		map.addLayer(gl);
-    		map.on("click", function (e) {
-    			var radius = 2;
-    			var circle = new Circle({
-    					center: e.mapPoint,
-    					radius: radius
-    				});
-    			var graphic = new Graphic(circle, symbol);
-    			gl.add(graphic);
-    		});
     	}
 
     	// does the browser support canvas?
@@ -372,14 +358,17 @@
         }
       }
 
+
+
       function drawSensors() {
         for (i = 0; i < graphicsArray.length; ++i) {
             map.graphics.remove(graphicsArray[i]);
         }
+
         for(var i = 0; i < dbData.length; i++){
           var point = new Point(dbData[i].Longitude, dbData[i].Latitude);
           var pointSymbol = new SimpleMarkerSymbol();
-          var pointAttributes = { Speed: dbData[i].Speed, Direction: dbData[i].Direction, Building: dbData[i].Location, Sensor: dbData[i].SensorID};
+          var pointAttributes = { Speed: String(dbData[i].Speed/10) + " m/s", Direction: cardinalDirections[dbData[i].Direction], Building: dbData[i].Location, Sensor: dbData[i].SensorID};
           var pointInfoTemplate = new InfoTemplate(dbData[i].Location);
           var pointGraphic = new Graphic(point, pointSymbol, pointAttributes).setInfoTemplate(pointInfoTemplate);
           graphicsArray.push(pointGraphic);
@@ -465,8 +454,8 @@
 						<div class="row">
 							<div class="container">
 								<h4><b>Color Changer</b></h4>
-                Slow wind: <input type="color" id="startColor" value="#ff0000">
-                Fast wind: <input type="color" id="endColor" value="#ff0000">
+                Slow wind: <input type="color" id="startColor" value="#00A9FF">
+                Fast wind: <input type="color" id="endColor" value="#FFFF00">
 							</div>
 						</div>
 						<!--<div class="row">

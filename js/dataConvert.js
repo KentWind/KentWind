@@ -129,7 +129,7 @@ function convertData(dbData) {
     } else {
       angle = Math.abs(angle);
     }
-    for(j = 1; j < 6; j++) {
+    for(j = 1; j < 7; j++) {
       if (angle == 4) {
         if (jIndex <= (GRID_X - j)) {
           if(YComponentGrid[iIndex][jIndex + j] == 0) YComponentGrid[iIndex][jIndex + j] = (yDirection * fadeValue) / j;
