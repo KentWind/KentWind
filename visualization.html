@@ -192,6 +192,8 @@
     			refreshData();
     		});*/
 
+        updateLegend(STARTCOLOR, ENDCOLOR);
+
         var satellite = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer");
         map.addLayer(satellite);
         var darkgray = new ArcGISTiledMapServiceLayer("http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer");
@@ -393,6 +395,33 @@
         toggleSensors);
 
     });
+
+    function updateLegend(STARTCOLOR, ENDCOLOR){
+      var legendColors = multiColor(STARTCOLOR, ENDCOLOR);
+
+      for(var i = 0; i < 9; i++){
+        document.getElementById(String(i+1)).style.backgroundColor =
+        "rgb(" + String(legendColors[i].r) + "," + String(legendColors[i].g) + "," + String(legendColors[i].b) + ")";
+      }
+    }
+
+    function multiColor (startColor, endColor) {
+      var startPosition = 0;
+      var endPosition = 9;
+
+      var colors = [];
+
+      for (var i = 0; i < endPosition; i++) {
+        var color = {};
+
+        color.r = Math.floor(startColor.r + (endColor.r - startColor.r) * (i / (endPosition - 1)));
+        color.g = Math.floor(startColor.g + (endColor.g - startColor.g) * (i / (endPosition - 1)));
+        color.b = Math.floor(startColor.b + (endColor.b - startColor.b) * (i / (endPosition - 1)));
+        colors.push(color);
+      }
+
+      return colors;
+    }
     </script>
 
     <!-- The utility file adds functionality to the UI objects. -->
@@ -546,6 +575,16 @@
       <!--<button id="randomize" class="btn btn-danger navbar-btn">Randomize</button>-->
   <button id="filterButton" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#filtersModal">Visualization Filters</button>
   <button id="sensorButton" class="btn btn-primary navbar-btn">Toggle Sensors</button>
+    <span id="1" style="background-color: red; padding: 5px; border-radius: 3px; color: white;">1 m/s</span>
+    <span id="2" style="background-color: red; padding: 5px; border-radius: 3px; color: white;">2 m/s</span>
+    <span id="3" style="background-color: red; padding: 5px; border-radius: 3px; color: white;">3 m/s</span>
+    <span id="4" style="background-color: red; padding: 5px; border-radius: 3px; color: white;">4 m/s</span>
+    <span id="5" style="background-color: red; padding: 5px; border-radius: 3px; color: white;">5 m/s</span>
+    <span id="6" style="background-color: red; padding: 5px; border-radius: 3px; color: grey;">6 m/s</span>
+    <span id="7" style="background-color: red; padding: 5px; border-radius: 3px; color: grey;">7 m/s</span>
+    <span id="8" style="background-color: red; padding: 5px; border-radius: 3px; color: grey;">8 m/s</span>
+    <span id="9" style="background-color: red; padding: 5px; border-radius: 3px; color: grey;">9 m/s</span>
+
       <button id="timeButton" class="btn btn-primary navbar-btn pull-right" data-toggle="modal" data-target="#dateModal">Select Time</button>
       <div class="container-fluid pull-right" >
           <div class="well well-sm" style="margin-top: 5px;"><b>Current Time Display: </b><text id="currentTimeBox">LIVE</text></div>

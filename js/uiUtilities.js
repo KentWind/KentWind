@@ -106,6 +106,8 @@ $(function () {
 
 		windy.generateColorGradient(STARTCOLOR, ENDCOLOR);
 
+		updateLegend(STARTCOLOR, ENDCOLOR);
+
 		// windy.modifyColors(R, G, B, A);
 	});
 
@@ -178,6 +180,7 @@ $(function () {
         }
 
 	});
+
 
 
 
