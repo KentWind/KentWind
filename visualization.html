@@ -41,6 +41,8 @@
     var graphicsArray = [];
     var dbData;
     var enableSensors = true;
+    var STARTCOLOR = {  r: 0, g: 169, b: 255  };
+    var ENDCOLOR = {  r: 255, g: 255, b: 0  };
 
 
     ///////////////////////////////////////////
@@ -353,7 +355,7 @@
     				map.width,
     				map.height,
     				[[extent.xmin, extent.ymin], [extent.xmax, extent.ymax]],
-    				map.getZoom());
+            STARTCOLOR, ENDCOLOR)
     		}, 0);
     	}
 
@@ -385,8 +387,6 @@
         for (i = 0; i < graphicsArray.length; ++i) {
             map.graphics.add(graphicsArray[i]);
         }
-
-        console.log(map.graphics);
       }
 
       function removeSensors(){
@@ -463,40 +463,9 @@
 					<div class="container">
 						<div class="row">
 							<div class="container">
-								<h4><b>Color Changer (RGBA)</b></h4>
-								<div id="colorBox"></div>
-								<div class="row">
-									<div class="col-6">
-										<b>R</b>
-									</div>
-									<div class="col-6">
-										<input type="range" min="0" max="100" value="0" step="1" id="RGBA-RSlider" name="colorSlider" class="colorSlider">
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-6">
-										<b>G</b>
-									</div>
-									<div class="col-6">
-										<input type="range" min="0" max="100" value="0" step="1" id="RGBA-GSlider" name="colorSlider" class="colorSlider">
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-6">
-										<b>B</b>
-									</div>
-									<div class="col-6">
-										<input type="range" min="0" max="100" value="0" step="1" id="RGBA-BSlider" name="colorSlider" class="colorSlider">
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-6">
-										<b>A</b>
-									</div>
-									<div class="col-6">
-										<input type="range" min="0" max="1" value="1" step=".01" id="RGBA-ASlider" name="colorSlider" class="colorSlider">
-									</div>
-								</div>
+								<h4><b>Color Changer</b></h4>
+                Slow wind: <input type="color" id="startColor" value="#ff0000">
+                Fast wind: <input type="color" id="endColor" value="#ff0000">
 							</div>
 						</div>
 						<!--<div class="row">
