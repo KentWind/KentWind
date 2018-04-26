@@ -28,6 +28,9 @@ var Windy = function (params, current_ID) {
 	var STOPEVOLVING = false;
 	var NEW_INFO_AVAILABLE = false;
 
+  var START_COLOR;
+  var END_COLOR;
+
 	var BASE_RED = 100;
 	var BASE_GREEN = 100;
 	var BASE_BLUE = 0;
@@ -379,34 +382,15 @@ var Windy = function (params, current_ID) {
 		})();
 	};
 
+
+
 	function windIntensityColorScale(step, maxWind) {
 
 		var result = [];
 
-		var colors = multiColor({
-				r: 0,
-				g: 169,
-				b: 255
-			}, {
-				r: 255,
-				g: 255,
-				b: 0
-			});
+		var colors = multiColor(START_COLOR, END_COLOR);
 
 		for (var i = 0; i < 9; ++i) {
-
-			// result.push(
-			// "rgba("
-			// + BASE_RED + (INTENSITY_SCALE_STEP * i)
-			// + ", "
-			// + BASE_GREEN + (INTENSITY_SCALE_STEP * i)
-			// + ", "
-			// + BASE_BLUE + (INTENSITY_SCALE_STEP * i)
-			// + ", "
-			// + BASE_ALPHA
-			// + ")"
-			// );
-
 			result.push(
 				"rgba("
 				 + colors[i].r
@@ -456,12 +440,42 @@ var Windy = function (params, current_ID) {
 			color.r = Math.floor(startColor.r + (endColor.r - startColor.r) * (i / (endPosition - 1)));
 			color.g = Math.floor(startColor.g + (endColor.g - startColor.g) * (i / (endPosition - 1)));
 			color.b = Math.floor(startColor.b + (endColor.b - startColor.b) * (i / (endPosition - 1)));
-			//mu'fka
 			colors.push(color);
 		}
 
 		return colors;
 	}
+
+  var generateColorGradient = function(startColor, endColor) {
+    var colors = multiColor(startColor, endColor);
+
+    START_COLOR = startColor;
+    END_COLOR = endColor;
+
+    result = [];
+
+    for (var i = 0; i < 9; ++i) {
+      result.push(
+        "rgba("
+         + colors[i].r
+         + ", "
+         + colors[i].g
+         + ", "
+         + colors[i].b
+         + ", "
+         + BASE_ALPHA
+         + ")");
+    }
+
+    result.indexFor = function (m) { // map wind speed to a style
+			return Math.floor(Math.min(m, MAX_WIND_INTENSITY) / MAX_WIND_INTENSITY * (result.length - 1));
+		};
+
+    colorStyles = result;
+    buckets = colorStyles.map(function () {
+        return [];
+      });
+  }
 
 	//var colorStyles;
 	//var buckets;
@@ -585,10 +599,11 @@ var Windy = function (params, current_ID) {
 		})();
 	}
 
-	var start = function (bounds, width, height, extent, zoom) {
+	var start = function (bounds, width, height, extent, startColor, endColor) {
 		setID(current_ID);
 
-		ZOOMLEVEL = zoom;
+		START_COLOR = startColor;
+    END_COLOR = endColor;
 
 		var mapBounds = {
 			south: deg2rad(extent[0][1]),
@@ -669,7 +684,8 @@ var Windy = function (params, current_ID) {
 		newInfoAvailable: newInfoAvailable,
 		modifyColors: modifyColors,
 		multiColor: multiColor,
-		fadeOut: fadeOut
+		fadeOut: fadeOut,
+    generateColorGradient: generateColorGradient
 	};
 
 	// shim layer with setTimeout fallback

@@ -96,13 +96,27 @@ $(function () {
 	}
 
 	$("#applyFilters").click(function () {
-		var R = parseInt($("#RGBA-RSlider").val());
-		var G = parseInt($("#RGBA-GSlider").val());
-		var B = parseInt($("#RGBA-BSlider").val());
-		var A = parseInt($("#RGBA-RSlider").val());
+		// var R = parseInt($("#RGBA-RSlider").val());
+		// var G = parseInt($("#RGBA-GSlider").val());
+		// var B = parseInt($("#RGBA-BSlider").val());
+		var A = parseInt($("#RGBA-ASlider").val());
 
-		windy.modifyColors(R, G, B, A);
+		STARTCOLOR = hexToRgb(document.getElementById("startColor").value);
+		ENDCOLOR = hexToRgb(document.getElementById("endColor").value);
+
+		windy.generateColorGradient(STARTCOLOR, ENDCOLOR);
+
+		// windy.modifyColors(R, G, B, A);
 	});
+
+	function hexToRgb(hex) {
+			var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+			return result ? {
+				r: parseInt(result[1], 16),
+				g: parseInt(result[2], 16),
+				b: parseInt(result[3], 16)
+			} : null;
+		}
 
     $("#applyDateFilters").click(function () {
 
