@@ -14,6 +14,7 @@
 
     <link rel="stylesheet" href="css/visualizationStyle.css">
     <link rel="stylesheet" href="css/capstoneStyle.css">
+    <link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css" media="screen">
 
     <!-- Path utility file provides pathing manipulation for certain files. -->
     <script src="js/pathUtility.js"></script>
@@ -23,6 +24,7 @@
     <script src="js/generator.js"></script>
     <script src="js/pullData.js"></script>
     <script src="js/pullHistoricalData.js"></script>
+	<script src="js/bootstrap-datetimepicker.js"></script>
 
     <script src="https://js.arcgis.com/3.20compact/"></script>
     <script>
@@ -271,11 +273,11 @@
                         var current_time = new Date().getTime();
                         var selected_time = current_time - GLOBAL_SLIDER_SECONDS * 1000;
 
-                        if ( $('#epochText').val().length != 0 ) {
+                        if ( $('#dtp_input1').val().length != 0 ) {
                             selected_time = GLOBAL_SLIDER_SECONDS / 1000;
                         }
 
-						alert(selected_time + new Date(selected_time * 1000));
+						<!-- alert(selected_time + new Date(selected_time * 1000)); -->
 
                         dbData = pullHistoricalData( parseInt(selected_time) - 25, parseInt(selected_time));
 
@@ -393,6 +395,10 @@
         toggleSensors);
 
     });
+	
+	$(function () {
+		$('#datetimepicker').data("DateTimePicker");
+	});
     </script>
 
     <!-- The utility file adds functionality to the UI objects. -->
@@ -517,17 +523,17 @@
 					<div class="container">
 						<div class="row">
 							<div class="container">
-								<h4><b>Data Visualization</b></h4>
-
-                                <div id="slider-container">
-                                    <b>Data Status: </b><span id="sliderValue"></span>
-                                    <input type="range" min="0" max="2592000" value="0" step="900" class="slider" id="slider">
-                                </div>
-
-                                <div id="epochContainer">
-                                    <input type="text" id="epochText" style="background-color: black">
-                                </div>
-
+								<div class="form-group">
+									<b>Select Date & Time</b>
+									<div class="input-group date form_datetime col-md-3" data-date-format="MM dd yyyy - HH:ii p" data-link-field="dtp_input1" style="max-width: 500px;">
+										<input class="form-control" size="16" type="text" value="" readonly>
+										<span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+										<span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
+									</div>
+									<input type="hidden" id="dtp_input1" value="" /><br/>
+								</div>
+								<input type="hidden" id="dtp_input1" value="" /><br/>
+								<!-- <input type="text" id="epochText" style="background-color: black"> -->
 							</div>
 						</div>
 					</div>
@@ -547,12 +553,26 @@
   <button id="filterButton" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#filtersModal">Visualization Filters</button>
   <button id="sensorButton" class="btn btn-primary navbar-btn">Toggle Sensors</button>
       <button id="timeButton" class="btn btn-primary navbar-btn pull-right" data-toggle="modal" data-target="#dateModal">Select Time</button>
-      <div class="container-fluid pull-right" >
+	  <div class="container-fluid pull-right" >
           <div class="well well-sm" style="margin-top: 5px;"><b>Current Time Display: </b><text id="currentTimeBox">LIVE</text></div>
       </div>
     </div>
   </nav>
 
   </body>
+  
+  <script type="text/javascript">
+    $('.form_datetime').datetimepicker({
+		<!-- Options Documentation: https://bootstrap-datepicker.readthedocs.io/en/latest/options.html# -->
+        weekStart: 1,
+        todayBtn:  1,
+		autoclose: 1,
+		todayHighlight: 1,
+		startView: 2,
+		forceParse: 0,
+        showMeridian: 1,
+		minuteStep: 1
+    });
+</script>
 
 </html>

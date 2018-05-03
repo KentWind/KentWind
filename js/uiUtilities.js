@@ -1,90 +1,92 @@
 // Global var for slider
 var GLOBAL_SLIDER_SECONDS = 0;
 $(function () {
-	var sliderValue = $("#slider").val();
+	Date.prototype.getUnixTime = function() { return this.getTime()/1000|0 }
+	
+	// var sliderValue = $("#slider").val();
 
-	$("#sliderValue").html("<b style='color: red; text-decoration: underline;'>LIVE</b>");
+	// $("#sliderValue").html("<b style='color: red; text-decoration: underline;'>LIVE</b>");
 
-	$("#slider").on('change input', function () {
+	// $("#slider").on('change input', function () {
 
-		sliderValue = $("#slider").val();
+		// sliderValue = $("#slider").val();
 
-		if (parseInt(sliderValue) == 0) {
-			$("#sliderValue").html("<b style='color: red; text-decoration: underline;'>LIVE</b>");
-            GLOBAL_SLIDER_SECONDS = sliderMinutes * 60;
+		// if (parseInt(sliderValue) == 0) {
+			// $("#sliderValue").html("<b style='color: red; text-decoration: underline;'>LIVE</b>");
+            // GLOBAL_SLIDER_SECONDS = sliderMinutes * 60;
 
-		} else {
-			var sliderDays = sliderValue / 60 / 60 / 24;
+		// } else {
+			// var sliderDays = sliderValue / 60 / 60 / 24;
 
-			var sliderHours = sliderValue / 60 / 60;
-			var sliderMinutes = sliderValue / 60;
-            GLOBAL_SLIDER_SECONDS = sliderMinutes * 60;
+			// var sliderHours = sliderValue / 60 / 60;
+			// var sliderMinutes = sliderValue / 60;
+            // GLOBAL_SLIDER_SECONDS = sliderMinutes * 60;
 
 
 
-			var sliderValueText = sliderDays.toFixed(2) + " day(s) ago | " + sliderHours + " hour(s) ago | " + sliderMinutes + " minute(s) ago";
-			$("#sliderValue").text(sliderValueText);
-		}
-	});
+			// var sliderValueText = sliderDays.toFixed(2) + " day(s) ago | " + sliderHours + " hour(s) ago | " + sliderMinutes + " minute(s) ago";
+			// $("#sliderValue").text(sliderValueText);
+		// }
+	// });
 
-	$("input[class=colorSlider]").on('change input', function () {
-		changeColorBox();
-	});
+	// $("input[class=colorSlider]").on('change input', function () {
+		// changeColorBox();
+	// });
 
-	var today = new Date();
-	var todayString = today.getMonth() + 1 + "/" + today.getDate() + "/" + today.getFullYear();
-	$("#endDaysSliderValue").text("0 days ago - Date: " + todayString);
-	$("#fromDaysSliderValue").text("0 days ago - Date: " + todayString);
+	// var today = new Date();
+	// var todayString = today.getMonth() + 1 + "/" + today.getDate() + "/" + today.getFullYear();
+	// $("#endDaysSliderValue").text("0 days ago - Date: " + todayString);
+	// $("#fromDaysSliderValue").text("0 days ago - Date: " + todayString);
 
-	$("#fromDaysSlider").on('change input', function () {
-		changeFromDaysSlider();
-		updateEndDaysSliderText();
-	});
+	// $("#fromDaysSlider").on('change input', function () {
+		// changeFromDaysSlider();
+		// updateEndDaysSliderText();
+	// });
 
-	$("#endDaysSlider").on('change input', function () {
-		changeEndDaysSlider();
-		updateFromDaysSliderText();
-	});
+	// $("#endDaysSlider").on('change input', function () {
+		// changeEndDaysSlider();
+		// updateFromDaysSliderText();
+	// });
 
-	$("#MapTypeOption").change(function () {
-		if ($('input[name=maptype]:checked', '#MapTypeOption').val() == "Average") {
-			$("#averageFilters").removeClass("hidden");
-		} else {
-			$("#averageFilters").addClass("hidden");
-		}
-	});
+	// $("#MapTypeOption").change(function () {
+		// if ($('input[name=maptype]:checked', '#MapTypeOption').val() == "Average") {
+			// $("#averageFilters").removeClass("hidden");
+		// } else {
+			// $("#averageFilters").addClass("hidden");
+		// }
+	// });
 
-	function changeFromDaysSlider() {
-		updateFromDaysSliderText();
+	// function changeFromDaysSlider() {
+		// updateFromDaysSliderText();
 
-		if (parseInt($("#endDaysSlider").val()) < parseInt($("#fromDaysSlider").val())) {
-			$("#endDaysSlider").val($("#fromDaysSlider").val());
-		}
-	}
+		// if (parseInt($("#endDaysSlider").val()) < parseInt($("#fromDaysSlider").val())) {
+			// $("#endDaysSlider").val($("#fromDaysSlider").val());
+		// }
+	// }
 
-	function changeEndDaysSlider() {
-		updateEndDaysSliderText();
+	// function changeEndDaysSlider() {
+		// updateEndDaysSliderText();
 
-		if (parseInt($("#endDaysSlider").val()) < parseInt($("#fromDaysSlider").val())) {
-			$("#fromDaysSlider").val($("#endDaysSlider").val());
-		}
-	}
+		// if (parseInt($("#endDaysSlider").val()) < parseInt($("#fromDaysSlider").val())) {
+			// $("#fromDaysSlider").val($("#endDaysSlider").val());
+		// }
+	// }
 
-	function updateFromDaysSliderText() {
-		var days = $("#fromDaysSlider").val();
-		var date = new Date(new Date().setDate(today.getDate() - days));
-		var dateString = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
+	// function updateFromDaysSliderText() {
+		// var days = $("#fromDaysSlider").val();
+		// var date = new Date(new Date().setDate(today.getDate() - days));
+		// var dateString = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
 
-		$("#fromDaysSliderValue").text(days + " days ago - Date: " + dateString);
-	}
+		// $("#fromDaysSliderValue").text(days + " days ago - Date: " + dateString);
+	// }
 
-	function updateEndDaysSliderText() {
-		var days = $("#endDaysSlider").val();
-		var date = new Date(new Date().setDate(today.getDate() - days));
-		var dateString = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
+	// function updateEndDaysSliderText() {
+		// var days = $("#endDaysSlider").val();
+		// var date = new Date(new Date().setDate(today.getDate() - days));
+		// var dateString = date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
 
-		$("#endDaysSliderValue").text(days + " days ago - Date: " + dateString);
-	}
+		// $("#endDaysSliderValue").text(days + " days ago - Date: " + dateString);
+	// }
 
 	function changeColorBox() {
 		var R = parseInt($("#RGBA-RSlider").val());
@@ -119,8 +121,10 @@ $(function () {
 		}
 
     $("#applyDateFilters").click(function () {
-
-        if ( $('#epochText').val().length == 0 ) {
+		var selectedDate = new Date($("#dtp_input1").val()).getUnixTime() * 1000;
+		
+		
+        if ( $("#dtp_input1").val() == null || $("#dtp_input1").val() == 0 ) {
             if ( GLOBAL_SLIDER_SECONDS > 0 ) {
 
                 var current_time = new Date().getTime();
@@ -159,9 +163,9 @@ $(function () {
         } else {
             //var current_time = new Date().getTime();
             //var selected_time = new Date( current_time - parseInt($('#epochText').val()) * 1000 );
-            var selected_time = new Date( parseInt($('#epochText').val()) );
+            var selected_time = new Date( parseInt(selectedDate) );
 
-            GLOBAL_SLIDER_SECONDS = parseInt($('#epochText').val());
+            GLOBAL_SLIDER_SECONDS = parseInt(selectedDate);
 
             document.getElementById("currentTimeBox").innerHTML = selected_time;
             DATA_STATUS_LIVE = false;
@@ -175,10 +179,9 @@ $(function () {
 
             clearInterval( GLOBAL_REFRESH_INTERVAL );
             GLOBAL_REFRESH_FUNCTION();
+			$("#dateModal").modal('toggle');
         }
 
 	});
-
-
 
 });
