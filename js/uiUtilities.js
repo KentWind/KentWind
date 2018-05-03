@@ -121,7 +121,6 @@ $(function () {
 		}
 
     $("#applyDateFilters").click(function () {
-		debugger;
 		var selectedDate = new Date($("#dtp_input1").val()).getUnixTime() * 1000;
 		
 		
@@ -180,6 +179,7 @@ $(function () {
 
             clearInterval( GLOBAL_REFRESH_INTERVAL );
             GLOBAL_REFRESH_FUNCTION();
+			$("#dateModal").modal('toggle');
         }
 
 	});
