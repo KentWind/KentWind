@@ -273,7 +273,7 @@
                         var current_time = new Date().getTime();
                         var selected_time = current_time - GLOBAL_SLIDER_SECONDS * 1000;
 
-                        if ( $('#epochText').val().length != 0 ) {
+                        if ( $('#dtp_input1').val().length != 0 ) {
                             selected_time = GLOBAL_SLIDER_SECONDS / 1000;
                         }
 
@@ -525,7 +525,7 @@
 							<div class="container">
 								<div class="form-group">
 									<b>Select Date & Time</b>
-									<div class="input-group date form_datetime col-md-3" data-date-format="MM dd yyyy - HH:ii p" data-link-field="dtp_input1">
+									<div class="input-group date form_datetime col-md-3" data-date-format="MM dd yyyy - HH:ii p" data-link-field="dtp_input1" style="max-width: 500px;">
 										<input class="form-control" size="16" type="text" value="" readonly>
 										<span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
 										<span class="input-group-addon"><span class="glyphicon glyphicon-th"></span></span>
@@ -553,7 +553,7 @@
   <button id="filterButton" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#filtersModal">Visualization Filters</button>
   <button id="sensorButton" class="btn btn-primary navbar-btn">Toggle Sensors</button>
       <button id="timeButton" class="btn btn-primary navbar-btn pull-right" data-toggle="modal" data-target="#dateModal">Select Time</button>
-      <div class="container-fluid pull-right" >
+	  <div class="container-fluid pull-right" >
           <div class="well well-sm" style="margin-top: 5px;"><b>Current Time Display: </b><text id="currentTimeBox">LIVE</text></div>
       </div>
     </div>
@@ -563,6 +563,7 @@
   
   <script type="text/javascript">
     $('.form_datetime').datetimepicker({
+		<!-- Options Documentation: https://bootstrap-datepicker.readthedocs.io/en/latest/options.html# -->
         weekStart: 1,
         todayBtn:  1,
 		autoclose: 1,
@@ -570,7 +571,7 @@
 		startView: 2,
 		forceParse: 0,
         showMeridian: 1,
-		minuteStep: 15
+		minuteStep: 1
     });
 </script>
 
